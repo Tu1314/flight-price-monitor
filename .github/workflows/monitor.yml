@@ -73,7 +73,7 @@ jobs:
             --return-dates "${{ github.event.inputs.return_dates || '2026-10-06' }}" \
             --platforms "${{ github.event.inputs.platforms || 'fliggy,tuniu,qunar,tongcheng' }}" \
             --threshold "${{ github.event.inputs.threshold || '0' }}" \
-            --serverchan-key "${{ secrets.SERVERCHAN_SEND_KEY }}" \
+            --serverchan-key "${{ secrets.SERVERCHAN_KEY }}" \
             --output config.yaml
 
       - name: Run price monitor (one round)
