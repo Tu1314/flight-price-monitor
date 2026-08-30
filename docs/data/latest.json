@@ -1,0 +1,335 @@
+{
+  "ok": true,
+  "data": {
+    "query": {
+      "from": {
+        "code": "CTU",
+        "name": "CTU"
+      },
+      "to": {
+        "code": "CTU",
+        "name": "CTU"
+      },
+      "depart_dates": [
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07"
+      ],
+      "return_dates": [
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07"
+      ],
+      "platforms": [
+        "fliggy",
+        "qunar",
+        "tongcheng",
+        "tuniu"
+      ],
+      "threshold": 0,
+      "query_time": "2026-08-30 13:18:46"
+    },
+    "results": [
+      {
+        "platform": "fliggy",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-05",
+        "price": 870.0,
+        "airline": "川航",
+        "flight_no": "3U6859",
+        "depart_time": "2026-10-05 07:55",
+        "arrive_time": "2026-10-05 22:35",
+        "fetched_at": "2026-08-30 13:08:43"
+      },
+      {
+        "platform": "fliggy",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 990.0,
+        "airline": "西藏航",
+        "flight_no": "TV9703",
+        "depart_time": "2026-10-06 10:00",
+        "arrive_time": "2026-10-06 18:05",
+        "fetched_at": "2026-08-30 13:08:56"
+      },
+      {
+        "platform": "fliggy",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "price": 1200.0,
+        "airline": "中联航",
+        "flight_no": "KN5101",
+        "depart_time": "2026-10-07 19:10",
+        "arrive_time": "2026-10-08 15:50",
+        "fetched_at": "2026-08-30 13:09:13"
+      },
+      {
+        "platform": "tuniu",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-05",
+        "price": 900.0,
+        "airline": "华夏",
+        "flight_no": "G51145E",
+        "depart_time": "08:20",
+        "arrive_time": "20:00",
+        "fetched_at": "2026-08-30 13:09:34"
+      },
+      {
+        "platform": "tuniu",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 1400.0,
+        "airline": "国航",
+        "flight_no": "CA4045",
+        "depart_time": "07:00",
+        "arrive_time": "09:35",
+        "fetched_at": "2026-08-30 13:09:54"
+      },
+      {
+        "platform": "qunar",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 993.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:13:44"
+      },
+      {
+        "platform": "qunar",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "price": 1275.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:13:55"
+      },
+      {
+        "platform": "tongcheng",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-05",
+        "price": 900.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:14:23"
+      },
+      {
+        "platform": "tongcheng",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 1400.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:14:46"
+      },
+      {
+        "platform": "tongcheng",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "price": 1310.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:15:14"
+      },
+      {
+        "platform": "fliggy",
+        "from": "TSN",
+        "to": "CTU",
+        "date": "2026-10-06",
+        "price": 710.0,
+        "airline": "新海航|天津航空",
+        "flight_no": "GS7887",
+        "depart_time": "2026-10-06 11:00",
+        "arrive_time": "2026-10-06 13:50",
+        "fetched_at": "2026-08-30 13:15:23"
+      },
+      {
+        "platform": "qunar",
+        "from": "TSN",
+        "to": "CTU",
+        "date": "2026-10-06",
+        "price": 710.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:18:25"
+      },
+      {
+        "platform": "tongcheng",
+        "from": "TSN",
+        "to": "CTU",
+        "date": "2026-10-06",
+        "price": 710.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-08-30 13:18:46"
+      }
+    ],
+    "summary": [
+      {
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-05",
+        "per_platform": {
+          "fliggy": 870.0,
+          "tuniu": 900.0,
+          "tongcheng": 900.0
+        },
+        "min_price": 870.0,
+        "best_platform": "fliggy",
+        "best_flight": "川航3U6859",
+        "best_depart_time": "2026-10-05 07:55",
+        "best_arrive_time": "2026-10-05 22:35"
+      },
+      {
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "per_platform": {
+          "fliggy": 990.0,
+          "tuniu": 1400.0,
+          "qunar": 993.0,
+          "tongcheng": 1400.0
+        },
+        "min_price": 990.0,
+        "best_platform": "fliggy",
+        "best_flight": "西藏航TV9703",
+        "best_depart_time": "2026-10-06 10:00",
+        "best_arrive_time": "2026-10-06 18:05"
+      },
+      {
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "per_platform": {
+          "fliggy": 1200.0,
+          "qunar": 1275.0,
+          "tongcheng": 1310.0
+        },
+        "min_price": 1200.0,
+        "best_platform": "fliggy",
+        "best_flight": "中联航KN5101",
+        "best_depart_time": "2026-10-07 19:10",
+        "best_arrive_time": "2026-10-08 15:50"
+      },
+      {
+        "from": "TSN",
+        "to": "CTU",
+        "date": "2026-10-06",
+        "per_platform": {
+          "fliggy": 710.0,
+          "qunar": 710.0,
+          "tongcheng": 710.0
+        },
+        "min_price": 710.0,
+        "best_platform": "fliggy",
+        "best_flight": "新海航|天津航空GS7887",
+        "best_depart_time": "2026-10-06 11:00",
+        "best_arrive_time": "2026-10-06 13:50"
+      }
+    ],
+    "trend": {
+      "2026-10-05": {
+        "fliggy": [
+          {
+            "t": "2026-08-30 13:08:43",
+            "v": 870.0
+          }
+        ],
+        "tuniu": [
+          {
+            "t": "2026-08-30 13:09:34",
+            "v": 900.0
+          }
+        ],
+        "tongcheng": [
+          {
+            "t": "2026-08-30 13:14:23",
+            "v": 900.0
+          }
+        ]
+      },
+      "2026-10-06": {
+        "fliggy": [
+          {
+            "t": "2026-08-30 13:08:56",
+            "v": 990.0
+          },
+          {
+            "t": "2026-08-30 13:15:23",
+            "v": 710.0
+          }
+        ],
+        "tuniu": [
+          {
+            "t": "2026-08-30 13:09:54",
+            "v": 1400.0
+          }
+        ],
+        "qunar": [
+          {
+            "t": "2026-08-30 13:13:44",
+            "v": 993.0
+          },
+          {
+            "t": "2026-08-30 13:18:25",
+            "v": 710.0
+          }
+        ],
+        "tongcheng": [
+          {
+            "t": "2026-08-30 13:14:46",
+            "v": 1400.0
+          },
+          {
+            "t": "2026-08-30 13:18:46",
+            "v": 710.0
+          }
+        ]
+      },
+      "2026-10-07": {
+        "fliggy": [
+          {
+            "t": "2026-08-30 13:09:13",
+            "v": 1200.0
+          }
+        ],
+        "qunar": [
+          {
+            "t": "2026-08-30 13:13:55",
+            "v": 1275.0
+          }
+        ],
+        "tongcheng": [
+          {
+            "t": "2026-08-30 13:15:14",
+            "v": 1310.0
+          }
+        ]
+      }
+    },
+    "generated_at": "2026-08-30T13:18:51.773513Z"
+  }
+}
