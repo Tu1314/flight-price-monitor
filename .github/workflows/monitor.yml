@@ -2,40 +2,40 @@ name: Flight Price Monitor
 
 on:
   schedule:
-    # 每天 01:00 / 07:00 / 13:00 / 19:00 UTC（北京时间 09/15/21/03 点）
+    # 姣忓ぉ 01:00 / 07:00 / 13:00 / 19:00 UTC锛堝寳浜椂闂?09/15/21/03 鐐癸級
     - cron: '0 0,1,7,13,19 * * *'
   workflow_dispatch:
     inputs:
       from_code:
-        description: '出发地三字码 (如 LZO)'
+        description: '鍑哄彂鍦颁笁瀛楃爜 (濡?LZO)'
         required: true
         default: 'LZO'
       from_name:
-        description: '出发地名称 (如 泸州)'
+        description: '鍑哄彂鍦板悕绉?(濡?娉稿窞)'
         required: true
-        default: '泸州'
+        default: '娉稿窞'
       to_code:
-        description: '目的地三字码 (如 BJS)'
+        description: '鐩殑鍦颁笁瀛楃爜 (濡?BJS)'
         required: true
         default: 'BJS'
       to_name:
-        description: '目的地名称 (如 北京)'
+        description: '鐩殑鍦板悕绉?(濡?鍖椾含)'
         required: true
-        default: '北京'
+        default: '鍖椾含'
       depart_dates:
-        description: '去程日期, 逗号分隔 (如 2026-09-30,2026-10-01)'
+        description: '鍘荤▼鏃ユ湡, 閫楀彿鍒嗛殧 (濡?2026-09-30,2026-10-01)'
         required: true
         default: '2026-09-30,2026-10-01,2026-10-02'
       return_dates:
-        description: '回程日期, 逗号分隔 (可选)'
+        description: '鍥炵▼鏃ユ湡, 閫楀彿鍒嗛殧 (鍙€?'
         required: false
         default: '2026-10-06'
       platforms:
-        description: '平台: fliggy,tuniu,qunar,tongcheng,ctrip'
+        description: '骞冲彴: fliggy,tuniu,qunar,tongcheng,ctrip'
         required: false
         default: 'fliggy,tuniu,qunar,tongcheng'
       threshold:
-        description: '低价提醒阈值（元）'
+        description: '浣庝环鎻愰啋闃堝€硷紙鍏冿級'
         required: false
         default: '0'
 
@@ -63,17 +63,20 @@ jobs:
           python -m playwright install chromium --with-deps
 
       - name: Build config from workflow_dispatch or defaults
+        env:
+          # SERVERCHAN_SEND_KEY is documented; SERVERCHAN_KEY is supported
+          # for compatibility with existing repository secrets.
+          SERVERCHAN_SEND_KEY: ${{ secrets.SERVERCHAN_SEND_KEY || secrets.SERVERCHAN_KEY }}
         run: |
           python scripts/build_config.py \
             --from-code "${{ github.event.inputs.from_code || 'LZO' }}" \
-            --from-name "${{ github.event.inputs.from_name || '泸州' }}" \
+            --from-name "${{ github.event.inputs.from_name || '娉稿窞' }}" \
             --to-code "${{ github.event.inputs.to_code || 'BJS' }}" \
-            --to-name "${{ github.event.inputs.to_name || '北京' }}" \
+            --to-name "${{ github.event.inputs.to_name || '鍖椾含' }}" \
             --dates "${{ github.event.inputs.depart_dates || '2026-09-30,2026-10-01,2026-10-02' }}" \
             --return-dates "${{ github.event.inputs.return_dates || '2026-10-06' }}" \
             --platforms "${{ github.event.inputs.platforms || 'fliggy,tuniu,qunar,tongcheng' }}" \
             --threshold "${{ github.event.inputs.threshold || '0' }}" \
-            --serverchan-key "${{ secrets.SERVERCHAN_KEY }}" \
             --output config.yaml
 
       - name: Run price monitor (one round)
@@ -100,3 +103,4 @@ jobs:
           git add docs/data/
           git diff --staged --quiet || git commit -m "chore: update price data $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
+
