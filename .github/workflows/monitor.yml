@@ -29,7 +29,15 @@ on:
       return_dates:
         description: '回程日期, 逗号分隔 (可选)'
         required: false
-        default: '2026-10-06'
+        default: ''
+      trip_type:
+        description: '行程类型'
+        required: true
+        type: choice
+        options:
+          - one_way
+          - round_trip
+        default: one_way
       platforms:
         description: '平台: fliggy,tuniu,qunar,tongcheng,ctrip'
         required: false
@@ -74,7 +82,8 @@ jobs:
             --to-code "${{ github.event.inputs.to_code || 'BJS' }}" \
             --to-name "${{ github.event.inputs.to_name || '北京' }}" \
             --dates "${{ github.event.inputs.depart_dates || '2026-09-30,2026-10-01,2026-10-02' }}" \
-            --return-dates "${{ github.event.inputs.return_dates || '2026-10-06' }}" \
+            --return-dates "${{ github.event.inputs.return_dates || '' }}" \
+            --trip-type "${{ github.event.inputs.trip_type || 'one_way' }}" \
             --platforms "${{ github.event.inputs.platforms || 'fliggy,tuniu,qunar,tongcheng' }}" \
             --threshold "${{ github.event.inputs.threshold || '0' }}" \
             --output config.yaml
