@@ -2,7 +2,7 @@
 __pycache__/
 *.pyc
 *.pyo
-data/
+/data/
 logs/
 debug/
 user_data/
