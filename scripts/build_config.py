@@ -1,4 +1,4 @@
-"""浠庡懡浠よ鍙傛暟鐢熸垚 config.yaml锛堜緵 GitHub Actions 浣跨敤锛夈€?""
+"""从命令行参数生成 config.yaml（供 GitHub Actions 使用）。"""
 import argparse
 import os
 from pathlib import Path
@@ -96,4 +96,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
