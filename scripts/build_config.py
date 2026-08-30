@@ -12,6 +12,7 @@ def main():
     ap.add_argument("--to-name", required=True)
     ap.add_argument("--dates", required=True)
     ap.add_argument("--return-dates", default="")
+    ap.add_argument("--trip-type", choices=("one_way", "round_trip", "auto"), default="auto")
     ap.add_argument("--platforms", default="fliggy,tuniu,qunar,tongcheng")
     ap.add_argument("--threshold", type=int, default=0)
     ap.add_argument("--serverchan-key", default=None)
@@ -29,6 +30,13 @@ def main():
 
     depart = [d.strip() for d in args.dates.split(",") if d.strip()]
     returns = [d.strip() for d in args.return_dates.split(",") if d.strip()]
+    # Treat common form values for "no return" as an empty return itinerary.
+    if any(d.lower() in {"0", "none", "null", "no", "无", "无返程"} for d in returns):
+        returns = []
+    if args.trip_type == "one_way":
+        returns = []
+    elif args.trip_type == "round_trip" and not returns:
+        raise SystemExit("round_trip requires at least one return date")
     platforms = [p.strip() for p in args.platforms.split(",") if p.strip()]
 
     lines = ["routes:"]
