@@ -1,9 +1,9 @@
-"""鏈虹エ浠锋牸鐩戞帶 涓诲叆鍙?
+"""机票价格监控 主入口
 
-鐢ㄦ硶:
-    python main.py                # 鎸?config.yaml 閰嶇疆鍚姩瀹氭椂鐩戞帶
-    python main.py --once         # 绔嬪嵆璺戜竴娆″悗閫€鍑?
-    python main.py -c other.yaml  # 鎸囧畾閰嶇疆鏂囦欢
+用法:
+    python main.py                # 按 config.yaml 配置启动定时监控
+    python main.py --once         # 立即跑一次后退出
+    python main.py -c other.yaml  # 指定配置文件
 """
 import argparse
 import sys
@@ -48,12 +48,12 @@ def make_job(cfg: dict, logger, storage: PriceStorage, alerter: Alerter):
     for name in platforms:
         cls = REGISTRY.get(name)
         if cls is None:
-            logger.warning("鏈煡骞冲彴: %s锛屽凡璺宠繃", name)
+            logger.warning("未知平台: %s，已跳过", name)
             continue
         crawlers.append(cls(crawler_cfg, logger))
 
     def job():
-        logger.info("===== 寮€濮嬩竴杞姄鍙?=====")
+        logger.info("===== 开始一轮抓取 =====")
         for route in routes:
             all_prices = []
             for c in crawlers:
@@ -61,22 +61,22 @@ def make_job(cfg: dict, logger, storage: PriceStorage, alerter: Alerter):
                 storage.save_many(prices)
                 all_prices.extend(prices)
             alerter.check_and_alert(route, all_prices)
-        logger.info("===== 鏈疆鎶撳彇缁撴潫 =====")
+        logger.info("===== 本轮抓取结束 =====")
 
     return job
 
 
 def main():
-    ap = argparse.ArgumentParser(description="鏈虹エ浠锋牸鐩戞帶宸ュ叿")
-    ap.add_argument("-c", "--config", default="config.yaml", help="閰嶇疆鏂囦欢璺緞")
-    ap.add_argument("--once", action="store_true", help="鍙繍琛屼竴娆″悗閫€鍑?)
+    ap = argparse.ArgumentParser(description="机票价格监控工具")
+    ap.add_argument("-c", "--config", default="config.yaml", help="配置文件路径")
+    ap.add_argument("--once", action="store_true", help="只运行一次后退出")
     ap.add_argument("--login", metavar="PLATFORM",
-                    help="鐧诲綍鎸囧畾骞冲彴(ctrip/fliggy/tongcheng)锛屽脊鍑哄彲瑙佹祻瑙堝櫒锛岀櫥褰曞畬鎴愬悗鍥炶溅淇濆瓨浼氳瘽")
+                    help="登录指定平台(ctrip/fliggy/tongcheng)，弹出可见浏览器，登录完成后回车保存会话")
     args = ap.parse_args()
 
     cfg_path = Path(args.config)
     if not cfg_path.exists():
-        print(f"閰嶇疆鏂囦欢涓嶅瓨鍦? {cfg_path}", file=sys.stderr)
+        print(f"配置文件不存在: {cfg_path}", file=sys.stderr)
         sys.exit(1)
     cfg = load_config(str(cfg_path))
 
@@ -85,7 +85,7 @@ def main():
     storage = PriceStorage(out.get("db_path", "data/prices.db"))
     notifier = build_notifier(cfg.get("notifier"), logger)
     if notifier:
-        logger.info("宸插惎鐢ㄦ帹閫? %s", type(notifier).__name__)
+        logger.info("已启用推送: %s", type(notifier).__name__)
     else:
         logger.warning("ServerChan notification disabled: configure notifier.serverchan.enabled and a SendKey")
     notify_cfg = cfg.get("notifier") or {}
@@ -97,12 +97,12 @@ def main():
         push_rise_min=float(notify_cfg.get("push_rise_min", 50)),
     )
 
-    # ---- 鐧诲綍妯″紡 ----
+    # ---- 登录模式 ----
     if args.login:
         name = args.login.strip().lower()
         cls = REGISTRY.get(name)
         if cls is None:
-            print(f"鏈煡骞冲彴: {name}锛屽彲閫? {list(REGISTRY)}", file=sys.stderr)
+            print(f"未知平台: {name}，可选: {list(REGISTRY)}", file=sys.stderr)
             sys.exit(2)
         crawler = cls(cfg.get("crawler", {}), logger)
         crawler.interactive_login()
@@ -118,14 +118,13 @@ def main():
     interval = int(sched_cfg.get("interval_minutes", 30))
     jitter = int(sched_cfg.get("jitter_minutes", 0))
     run_on_start = bool(sched_cfg.get("run_on_start", True))
-    logger.info("鍚姩瀹氭椂璋冨害锛屾瘡 %d 鍒嗛挓涓€娆?(卤%d 鍒嗛挓闅忔満鎵板姩, 棣栨绔嬪嵆杩愯=%s)",
+    logger.info("启动定时调度，每 %d 分钟一次 (±%d 分钟随机扰动, 首次立即运行=%s)",
                 interval, jitter, run_on_start)
     try:
         run_scheduler(job, interval, run_on_start, jitter_minutes=jitter)
     except (KeyboardInterrupt, SystemExit):
-        logger.info("鏀跺埌閫€鍑轰俊鍙凤紝鍋滄鐩戞帶")
+        logger.info("收到退出信号，停止监控")
 
 
 if __name__ == "__main__":
     main()
-
