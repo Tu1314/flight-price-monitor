@@ -1,4 +1,4 @@
-"""低价提醒 + 微信推送（带去抖）"""
+"""浣庝环鎻愰啋 + 寰俊鎺ㄩ€侊紙甯﹀幓鎶栵級"""
 import logging
 from typing import List, Optional
 
@@ -9,10 +9,10 @@ class Alerter:
     def __init__(self, logger: logging.Logger, notifier=None, storage=None,
                  push_drop_min: float = 30, push_rise_min: float = 50):
         """
-        notifier:        推送器（None 表示不推送）
-        storage:         用于读写 alert_state（去抖）
-        push_drop_min:   触发"再次推送"的最小降幅(¥)
-        push_rise_min:   触发"再次推送"的最小涨幅(¥)
+        notifier:        鎺ㄩ€佸櫒锛圢one 琛ㄧず涓嶆帹閫侊級
+        storage:         鐢ㄤ簬璇诲啓 alert_state锛堝幓鎶栵級
+        push_drop_min:   瑙﹀彂"鍐嶆鎺ㄩ€?鐨勬渶灏忛檷骞?楼)
+        push_rise_min:   瑙﹀彂"鍐嶆鎺ㄩ€?鐨勬渶灏忔定骞?楼)
         """
         self.logger = logger
         self.notifier = notifier
@@ -23,15 +23,20 @@ class Alerter:
     def check_and_alert(self, route: Route, prices: List[FlightPrice]):
         if not prices:
             return
-        # 控制台/日志：三平台对比 + 多日期对比
+        # 鎺у埗鍙?鏃ュ織锛氫笁骞冲彴瀵规瘮 + 澶氭棩鏈熷姣?
         self._compare_platforms(route, prices)
         self._compare_dates(route, prices)
 
-        # 低价阈值提醒
+        # 浣庝环闃堝€兼彁閱?
         if route.alert_threshold and route.alert_threshold > 0:
             self._handle_threshold(route, prices)
+        else:
+            self.logger.info(
+                "[浣庝环] %s->%s threshold is 0; WeChat notifications disabled",
+                route.from_name, route.to_name,
+            )
 
-    # ---------- 控制台对比 ----------
+    # ---------- 鎺у埗鍙板姣?----------
     def _compare_platforms(self, route: Route, prices: List[FlightPrice]):
         by_date = {}
         for p in prices:
@@ -39,9 +44,9 @@ class Alerter:
         for date, lst in sorted(by_date.items()):
             lst = sorted(lst, key=lambda x: x.price)
             best = lst[0]
-            line = " | ".join(f"{p.platform}: ¥{p.price:.0f}" for p in lst)
+            line = " | ".join(f"{p.platform}: 楼{p.price:.0f}" for p in lst)
             self.logger.info(
-                "[对比] %s->%s %s 最低=%s ¥%.0f  (%s)",
+                "[瀵规瘮] %s->%s %s 鏈€浣?%s 楼%.0f  (%s)",
                 route.from_name, route.to_name, date,
                 best.platform, best.price, line,
             )
@@ -59,14 +64,14 @@ class Alerter:
             return
         cheapest_date, cheapest_p = ordered[0]
         self.logger.info(
-            "[多日期] %s->%s 最便宜日期=%s ¥%.0f (%s)",
+            "[澶氭棩鏈焆 %s->%s 鏈€渚垮疁鏃ユ湡=%s 楼%.0f (%s)",
             route.from_name, route.to_name, cheapest_date,
             cheapest_p.price, cheapest_p.platform,
         )
 
-    # ---------- 阈值提醒 + 推送 ----------
+    # ---------- 闃堝€兼彁閱?+ 鎺ㄩ€?----------
     def _handle_threshold(self, route: Route, prices: List[FlightPrice]):
-        # 按日期取最低
+        # 鎸夋棩鏈熷彇鏈€浣?
         best_by_date = {}
         for p in prices:
             cur = best_by_date.get(p.depart_date)
@@ -77,7 +82,7 @@ class Alerter:
             route_key = f"{route.from_code}-{route.to_code}-{date}"
 
             if bp.price > route.alert_threshold:
-                # 涨出阈值：清除去抖状态，下次跌破按"首次"重新推
+                # 娑ㄥ嚭闃堝€硷細娓呴櫎鍘绘姈鐘舵€侊紝涓嬫璺岀牬鎸?棣栨"閲嶆柊鎺?
                 if self.storage:
                     self.storage.clear_alert_state(route_key)
                 continue
@@ -85,13 +90,13 @@ class Alerter:
             last = self.storage.get_alert_state(route_key) if self.storage else None
             should_push, reason = self._should_push(bp.price, last)
 
-            # 控制台始终打印当前命中低价的状态
+            # 鎺у埗鍙板缁堟墦鍗板綋鍓嶅懡涓綆浠风殑鐘舵€?
             self.logger.warning(
-                "[低价] %s->%s %s ¥%.0f (阈值¥%.0f, 上次推送¥%s) -> %s",
+                "[浣庝环] %s->%s %s 楼%.0f (闃堝€悸?.0f, 涓婃鎺ㄩ€伮?s) -> %s",
                 route.from_name, route.to_name, date,
                 bp.price, route.alert_threshold,
                 f"{last:.0f}" if last else "-",
-                "推送" if should_push else f"跳过({reason})",
+                "鎺ㄩ€? if should_push else f"璺宠繃({reason})",
             )
 
             if should_push and self.notifier:
@@ -101,45 +106,45 @@ class Alerter:
 
     def _should_push(self, cur: float, last: Optional[float]):
         if last is None:
-            return True, "首次"
+            return True, "棣栨"
         diff = cur - last
         if diff <= -self.push_drop_min:
-            return True, f"降¥{-diff:.0f}"
+            return True, f"闄嵚-diff:.0f}"
         if diff >= self.push_rise_min:
-            return True, f"涨¥{diff:.0f}"
-        return False, f"波动¥{diff:+.0f}(<阈值)"
+            return True, f"娑diff:.0f}"
+        return False, f"娉㈠姩楼{diff:+.0f}(<闃堝€?"
 
     def _push(self, route: Route, date: str, p: FlightPrice,
               last: Optional[float]) -> bool:
         diff_txt = ""
-        emoji = "✈️"
+        emoji = "鉁堬笍"
         if last is not None:
             diff = p.price - last
             if diff <= 0:
-                emoji = "📉"
-                diff_txt = f"（较上次降 ¥{-diff:.0f}）"
+                emoji = "馃搲"
+                diff_txt = f"锛堣緝涓婃闄?楼{-diff:.0f}锛?
             else:
-                emoji = "📈"
-                diff_txt = f"（较上次涨 ¥{diff:.0f}）"
+                emoji = "馃搱"
+                diff_txt = f"锛堣緝涓婃娑?楼{diff:.0f}锛?
 
-        title = (f"{emoji} {route.from_name}→{route.to_name} {date} "
-                 f"¥{p.price:.0f}{diff_txt}")
+        title = (f"{emoji} {route.from_name}鈫抺route.to_name} {date} "
+                 f"楼{p.price:.0f}{diff_txt}")
 
-        # markdown 详细
+        # markdown 璇︾粏
         view_url = self._build_view_url(route, date, p.platform)
         desp = (
-            f"## 机票低价提醒\n\n"
-            f"- **航线**：{route.from_name}（{route.from_code}） → "
-            f"{route.to_name}（{route.to_code}）\n"
-            f"- **日期**：{date}\n"
-            f"- **当前最低价**：**¥{p.price:.0f}**\n"
-            f"- **设定阈值**：¥{route.alert_threshold:.0f}\n"
-            f"- **来源**：{p.platform}\n"
-            f"- **抓取时间**：{p.fetched_at}\n"
+            f"## 鏈虹エ浣庝环鎻愰啋\n\n"
+            f"- **鑸嚎**锛歿route.from_name}锛坽route.from_code}锛?鈫?"
+            f"{route.to_name}锛坽route.to_code}锛塡n"
+            f"- **鏃ユ湡**锛歿date}\n"
+            f"- **褰撳墠鏈€浣庝环**锛?*楼{p.price:.0f}**\n"
+            f"- **璁惧畾闃堝€?*锛毬route.alert_threshold:.0f}\n"
+            f"- **鏉ユ簮**锛歿p.platform}\n"
+            f"- **鎶撳彇鏃堕棿**锛歿p.fetched_at}\n"
         )
         if last is not None:
-            desp += f"- **上次推送价**：¥{last:.0f}\n"
-        desp += f"\n[👉 在 {p.platform} 查看详情]({view_url})\n"
+            desp += f"- **涓婃鎺ㄩ€佷环**锛毬last:.0f}\n"
+        desp += f"\n[馃憠 鍦?{p.platform} 鏌ョ湅璇︽儏]({view_url})\n"
         return self.notifier.send(title, desp)
 
     def _build_view_url(self, route: Route, date: str, platform: str) -> str:
@@ -170,9 +175,10 @@ class Alerter:
                 f"{route.from_code}_{route.to_code}_OW_1_0_0"
                 f"?deptDate={date}&isGo=0"
             )
-        # fliggy 默认走飞猪 H5
+        # fliggy 榛樿璧伴鐚?H5
         return (
             "https://outfliggys.m.taobao.com/app/trip/rx-flight-eco/pages/listing"
             f"?depCityCode={route.from_code}&arrCityCode={route.to_code}"
             f"&leaveDate={date}&adultPassengerNum=1&searchType=1"
         )
+
