@@ -1,5 +1,6 @@
 """低价提醒 + 微信推送（带去抖）"""
 import logging
+import os
 from typing import List, Optional
 
 from .models import FlightPrice, Route
@@ -145,7 +146,15 @@ class Alerter:
         if last is not None:
             desp += f"- **上次推送价**：¥{last:.0f}\n"
         desp += f"\n[👉 在 {p.platform} 查看详情]({view_url})\n"
+        desp += f"\n[查看完整可视化报告]({self._build_report_url()})\n"
         return self.notifier.send(title, desp)
+
+    def _build_report_url(self) -> str:
+        repository = os.environ.get("GITHUB_REPOSITORY", "Tu1314/flight-price-monitor")
+        owner, _, name = repository.partition("/")
+        if not owner or not name:
+            return "https://tu1314.github.io/flight-price-monitor/data/report.html"
+        return f"https://{owner.lower()}.github.io/{name}/data/report.html"
 
     def _build_view_url(self, route: Route, date: str, platform: str) -> str:
         if platform == "ctrip":
