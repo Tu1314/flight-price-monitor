@@ -3,19 +3,19 @@
   "data": {
     "query": {
       "from": {
-        "code": "TSN",
-        "name": "TSN"
+        "code": "CTU",
+        "name": "CTU"
       },
       "to": {
         "code": "TSN",
         "name": "TSN"
       },
       "depart_dates": [
-        "0"
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07"
       ],
-      "return_dates": [
-        "0"
-      ],
+      "return_dates": [],
       "platforms": [
         "fliggy",
         "qunar",
@@ -23,7 +23,7 @@
         "tuniu"
       ],
       "threshold": 0,
-      "query_time": "2026-08-30 16:33:01"
+      "query_time": "2026-08-30 16:56:37"
     },
     "results": [
       {
@@ -36,7 +36,7 @@
         "flight_no": "3U6859",
         "depart_time": "2026-10-05 07:55",
         "arrive_time": "2026-10-05 22:35",
-        "fetched_at": "2026-08-30 16:22:05"
+        "fetched_at": "2026-08-30 16:50:35"
       },
       {
         "platform": "fliggy",
@@ -48,7 +48,7 @@
         "flight_no": "TV9703",
         "depart_time": "2026-10-06 10:00",
         "arrive_time": "2026-10-06 18:05",
-        "fetched_at": "2026-08-30 16:22:21"
+        "fetched_at": "2026-08-30 16:50:45"
       },
       {
         "platform": "fliggy",
@@ -60,7 +60,7 @@
         "flight_no": "KN5101",
         "depart_time": "2026-10-07 19:10",
         "arrive_time": "2026-10-08 15:50",
-        "fetched_at": "2026-08-30 16:22:39"
+        "fetched_at": "2026-08-30 16:50:57"
       },
       {
         "platform": "tuniu",
@@ -72,7 +72,7 @@
         "flight_no": "G51145E",
         "depart_time": "08:20",
         "arrive_time": "20:00",
-        "fetched_at": "2026-08-30 16:22:58"
+        "fetched_at": "2026-08-30 16:51:15"
       },
       {
         "platform": "tuniu",
@@ -84,7 +84,7 @@
         "flight_no": "CA4045",
         "depart_time": "07:00",
         "arrive_time": "09:35",
-        "fetched_at": "2026-08-30 16:23:19"
+        "fetched_at": "2026-08-30 16:51:34"
       },
       {
         "platform": "qunar",
@@ -96,19 +96,19 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 16:27:12"
+        "fetched_at": "2026-08-30 16:55:10"
       },
       {
         "platform": "qunar",
         "from": "CTU",
         "to": "TSN",
         "date": "2026-10-07",
-        "price": 1275.0,
+        "price": 1283.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 16:27:23"
+        "fetched_at": "2026-08-30 16:55:27"
       },
       {
         "platform": "tongcheng",
@@ -120,7 +120,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 16:27:50"
+        "fetched_at": "2026-08-30 16:55:55"
       },
       {
         "platform": "tongcheng",
@@ -132,7 +132,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 16:28:11"
+        "fetched_at": "2026-08-30 16:56:13"
       },
       {
         "platform": "tongcheng",
@@ -144,31 +144,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 16:28:33"
-      },
-      {
-        "platform": "qunar",
-        "from": "TSN",
-        "to": "CTU",
-        "date": "0",
-        "price": 500.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-08-30 16:32:33"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "TSN",
-        "to": "CTU",
-        "date": "0",
-        "price": 500.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-08-30 16:33:01"
+        "fetched_at": "2026-08-30 16:56:37"
       }
     ],
     "summary": [
@@ -209,7 +185,7 @@
         "date": "2026-10-07",
         "per_platform": {
           "fliggy": 1200.0,
-          "qunar": 1275.0,
+          "qunar": 1283.0,
           "tongcheng": 1310.0
         },
         "min_price": 1200.0,
@@ -217,39 +193,25 @@
         "best_flight": "中联航KN5101",
         "best_depart_time": "2026-10-07 19:10",
         "best_arrive_time": "2026-10-08 15:50"
-      },
-      {
-        "from": "TSN",
-        "to": "CTU",
-        "date": "0",
-        "per_platform": {
-          "qunar": 500.0,
-          "tongcheng": 500.0
-        },
-        "min_price": 500.0,
-        "best_platform": "qunar",
-        "best_flight": "",
-        "best_depart_time": "",
-        "best_arrive_time": ""
       }
     ],
     "trend": {
       "2026-10-05": {
         "fliggy": [
           {
-            "t": "2026-08-30 16:22:05",
+            "t": "2026-08-30 16:50:35",
             "v": 870.0
           }
         ],
         "tuniu": [
           {
-            "t": "2026-08-30 16:22:58",
+            "t": "2026-08-30 16:51:15",
             "v": 900.0
           }
         ],
         "tongcheng": [
           {
-            "t": "2026-08-30 16:27:50",
+            "t": "2026-08-30 16:55:55",
             "v": 900.0
           }
         ]
@@ -257,25 +219,25 @@
       "2026-10-06": {
         "fliggy": [
           {
-            "t": "2026-08-30 16:22:21",
+            "t": "2026-08-30 16:50:45",
             "v": 990.0
           }
         ],
         "tuniu": [
           {
-            "t": "2026-08-30 16:23:19",
+            "t": "2026-08-30 16:51:34",
             "v": 1400.0
           }
         ],
         "qunar": [
           {
-            "t": "2026-08-30 16:27:12",
+            "t": "2026-08-30 16:55:10",
             "v": 993.0
           }
         ],
         "tongcheng": [
           {
-            "t": "2026-08-30 16:28:11",
+            "t": "2026-08-30 16:56:13",
             "v": 1400.0
           }
         ]
@@ -283,38 +245,24 @@
       "2026-10-07": {
         "fliggy": [
           {
-            "t": "2026-08-30 16:22:39",
+            "t": "2026-08-30 16:50:57",
             "v": 1200.0
           }
         ],
         "qunar": [
           {
-            "t": "2026-08-30 16:27:23",
-            "v": 1275.0
+            "t": "2026-08-30 16:55:27",
+            "v": 1283.0
           }
         ],
         "tongcheng": [
           {
-            "t": "2026-08-30 16:28:33",
+            "t": "2026-08-30 16:56:37",
             "v": 1310.0
-          }
-        ]
-      },
-      "0": {
-        "qunar": [
-          {
-            "t": "2026-08-30 16:32:33",
-            "v": 500.0
-          }
-        ],
-        "tongcheng": [
-          {
-            "t": "2026-08-30 16:33:01",
-            "v": 500.0
           }
         ]
       }
     },
-    "generated_at": "2026-08-30T16:33:12.558254Z"
+    "generated_at": "2026-08-30T16:56:45.830930Z"
   }
 }
