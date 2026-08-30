@@ -1,5 +1,6 @@
-"""从命令行参数生成 config.yaml（供 GitHub Actions 使用）。"""
+"""浠庡懡浠よ鍙傛暟鐢熸垚 config.yaml锛堜緵 GitHub Actions 浣跨敤锛夈€?""
 import argparse
+import os
 from pathlib import Path
 
 
@@ -13,9 +14,18 @@ def main():
     ap.add_argument("--return-dates", default="")
     ap.add_argument("--platforms", default="fliggy,tuniu,qunar,tongcheng")
     ap.add_argument("--threshold", type=int, default=0)
-    ap.add_argument("--serverchan-key", default="")
+    ap.add_argument("--serverchan-key", default=None)
     ap.add_argument("--output", default="config.yaml")
     args = ap.parse_args()
+
+    # Support both the documented secret name and the legacy name.
+    serverchan_key = args.serverchan_key
+    if serverchan_key is None:
+        serverchan_key = (
+            os.environ.get("SERVERCHAN_SEND_KEY")
+            or os.environ.get("SERVERCHAN_KEY")
+            or ""
+        )
 
     depart = [d.strip() for d in args.dates.split(",") if d.strip()]
     returns = [d.strip() for d in args.return_dates.split(",") if d.strip()]
@@ -72,15 +82,18 @@ def main():
         "  push_drop_min: 30",
         "  push_rise_min: 50",
         "  serverchan:",
-        f"    enabled: {'true' if args.serverchan_key else 'false'}",
-        f'    send_key: "{args.serverchan_key}"',
+        f"    enabled: {'true' if serverchan_key else 'false'}",
+        f'    send_key: "{serverchan_key}"',
         '    channel: ""',
         "",
     ]
 
     Path(args.output).write_text("\n".join(lines), encoding="utf-8")
     print(f"config written to {args.output}")
+    print(f"ServerChan notifications: {'enabled' if serverchan_key else 'disabled (missing SendKey)'}")
+    print(f"Price alert threshold: {args.threshold} ({'enabled' if args.threshold > 0 else 'disabled'})")
 
 
 if __name__ == "__main__":
     main()
+
