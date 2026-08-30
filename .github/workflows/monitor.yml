@@ -3,7 +3,7 @@ name: Flight Price Monitor
 on:
   schedule:
     # 每天 01:00 / 07:00 / 13:00 / 19:00 UTC（北京时间 09/15/21/03 点）
-    - cron: '0 1,7,13,19 * * *'
+    - cron: '0 0,1,7,13,19 * * *'
   workflow_dispatch:
     inputs:
       from_code:
