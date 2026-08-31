@@ -7,6 +7,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 from string import Template
+from urllib.parse import quote
 
 PLATFORM_NAMES  = {"fliggy":"飞猪","tuniu":"途牛","ctrip":"携程","qunar":"去哪儿","tongcheng":"同程"}
 PLATFORM_COLORS = {"fliggy":"#FF6B00","tuniu":"#00A651","ctrip":"#0086F6","qunar":"#FF4500","tongcheng":"#7C3AED"}
@@ -63,6 +64,8 @@ canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
 .status.low{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
 .status.normal{background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
 .muted{color:var(--sub);font-size:12px}
+.action-link{color:var(--accent);font-weight:600;text-decoration:none}
+.action-link:hover{text-decoration:underline}
 .footer{text-align:center;color:#b0b7c3;font-size:12px;padding:20px 0 0}
 """
 
@@ -115,6 +118,28 @@ def e(s):
     return html_mod.escape(str(s))
 
 
+def build_view_url(q, date, platform):
+    fc, tc = q["from"]["code"], q["to"]["code"]
+    fn, tn = q["from"].get("name", fc), q["to"].get("name", tc)
+    if platform == "ctrip":
+        return ("https://m.ctrip.com/html5/flight/taro/first?from=inner"
+                f"&tripType=ONE_WAY&dcity={quote(fc)}&acity={quote(tc)}&ddate={quote(date)}")
+    if platform == "tongcheng":
+        return ("https://m.ly.com/ft/touch/book1?date=" + quote(date) +
+                f"&an=1&cn=0&baby=0&fromcitycode={quote(fc)}&fromCode={quote(fc)}"
+                f"&tocitycode={quote(tc)}&toCode={quote(tc)}&cabin=0&platcode=518&frompage=HOME")
+    if platform == "qunar":
+        return ("https://touch.qunar.com/ncs/page/flightlist?depCity=" + quote(fn) +
+                f"&arrCity={quote(tn)}&goDate={quote(date)}&from=touch_index_search"
+                "&child=0&baby=0&cabinType=0")
+    if platform == "tuniu":
+        return (f"https://m.tuniu.com/flight/domestic/new/{quote(fc)}_{quote(tc)}_OW_1_0_0"
+                f"?deptDate={quote(date)}&isGo=0")
+    return ("https://outfliggys.m.taobao.com/app/trip/rx-flight-eco/pages/listing"
+            f"?depCityCode={quote(fc)}&arrCityCode={quote(tc)}&leaveDate={quote(date)}"
+            "&adultPassengerNum=1&searchType=1")
+
+
 def render(q, summary, trend, health=None, calendar=None, status="not_low"):
     fn, fc = q["from"]["name"], q["from"]["code"]
     tn, tc = q["to"]["name"],   q["to"]["code"]
@@ -145,12 +170,15 @@ def render(q, summary, trend, health=None, calendar=None, status="not_low"):
                 cells += f"<td>¥{pr:.0f}</td>"
         bc = PLATFORM_COLORS.get(s["best_platform"], "#888")
         bn = PLATFORM_NAMES.get(s["best_platform"], s["best_platform"])
+        view_url = build_view_url(q, s["date"], s["best_platform"])
+        flight_html = (f"<a class='action-link' target='_blank' rel='noopener' href='{e(view_url)}'>"
+                       f"{e(s['best_flight'] or '查看平台低价')}</a>")
         rows_html.append(
             f"<tr>"
             f"<td><span class='{'tag-r' if is_r else 'tag-d'}'>{'回程' if is_r else '去程'}</span> {e(s['date'])}</td>"
             f"{cells}"
             f"<td class='best'>¥{s['min_price']:.0f}</td>"
-            f"<td>{e(s['best_flight'])}<br><span class='badge' style='background:{bc}'>{e(bn)}</span></td>"
+            f"<td>{flight_html}<br><span class='badge' style='background:{bc}'>{e(bn)}</span></td>"
             f"<td class='time'>{e(s['best_depart_time'])}<br>→ {e(s['best_arrive_time'])}<br>"
             f"含税 ¥{e(s.get('tax') or '未知')} · 行李 {e(s.get('baggage') or '未知')} · 余票 {e(s.get('seats') or '未知')}</td>"
             f"</tr>"
@@ -181,6 +209,14 @@ def render(q, summary, trend, health=None, calendar=None, status="not_low"):
 
     status_class = "low" if status == "low_price" else "normal"
     status_text = "低价提醒" if status == "low_price" else "未低价提醒"
+    threshold = float(q.get("threshold") or 0)
+    low_summary = [s for s in summary if threshold > 0 and s.get("min_price", 10**9) <= threshold]
+    low_link_html = ""
+    if low_summary:
+        low = min(low_summary, key=lambda s: s["min_price"])
+        low_link_html = (f"<a class='action-link' target='_blank' rel='noopener' "
+                         f"href='{e(build_view_url(q, low['date'], low['best_platform']))}'>"
+                         f"立即查看 {e(PLATFORM_NAMES.get(low['best_platform'], low['best_platform']))} 最低价 ¥{low['min_price']:.0f}</a>")
     nearby = q.get("nearby_airports", {})
     nearby_text = f"出发机场：{' / '.join(nearby.get('from', [fc]))}　到达机场：{' / '.join(nearby.get('to', [tc]))}"
     cal_rows = []
@@ -213,7 +249,7 @@ def render(q, summary, trend, health=None, calendar=None, status="not_low"):
     <h1>✈️ {e(fn)}（{e(fc)}）⇄ {e(tn)}（{e(tc)}）</h1>
     <div class="sub">机票多平台价格监控 · {e(q['query_time'])} · 数据仅供参考</div>
   </div>
-  <div class="status {status_class}">{status_text} <span class="muted">· 本轮报告每次运行都会更新</span></div>
+  <div class="status {status_class}">{status_text} <span class="muted">· 本轮报告每次运行都会更新</span>{('<br>'+low_link_html) if low_link_html else ''}</div>
   <div class="card"><div class="card-title">附近机场组合</div><div>{e(nearby_text)}</div></div>
   <div class="card">
     <div class="card-title">📊 比价结果</div>
