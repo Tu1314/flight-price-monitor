@@ -49,12 +49,14 @@ class FliggyCrawler(BaseCrawler):
 
     def __init__(self, config: dict, logger):
         super().__init__(config, logger)
-        self.max_attempts: int = int(config.get("max_attempts", 5))
+        self.max_attempts: int = int(config.get("max_attempts", 2))
         self.max_poll: int = int(config.get("fliggy_max_poll", 3))
-        self.backoff_s: float = float(config.get("backoff_seconds", 5))
+        self.backoff_s: float = float(config.get("backoff_seconds", 8))
+        self.risk_cooldown_s: float = float(config.get("risk_cooldown_seconds", 900))
         self.rate_limit: bool = bool(config.get("rate_limit", True))
         self._success_times: list = []
         self._rate_lock = threading.Lock()
+        self._blocked_until = 0.0
 
     def login_url(self) -> str:
         return "https://login.taobao.com/member/login.jhtml"
@@ -72,6 +74,9 @@ class FliggyCrawler(BaseCrawler):
     def _rate_record(self):
         with self._rate_lock:
             self._success_times.append(time.time())
+
+    def _in_risk_cooldown(self) -> bool:
+        return time.time() < self._blocked_until
 
     @staticmethod
     def _sign(token: str, t: str, data: str) -> str:
@@ -95,16 +100,22 @@ class FliggyCrawler(BaseCrawler):
 
     @staticmethod
     def _looks_like_real_price(body: str) -> bool:
-        if not body or "SUCCESS" not in body:
+        if not body:
             return False
         try:
             obj = json.loads(body)
         except Exception:
             return False
-        if "SUCCESS" not in str(obj.get("ret", "")):
+        ret = obj.get("ret", "")
+        if "SUCCESS" not in str(ret).upper():
             return False
         data = obj.get("data") or {}
-        if not data.get("success"):
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except Exception:
+                return False
+        if not isinstance(data, dict):
             return False
         return bool(data.get("items")) or bool(data.get("lowestPrice"))
 
@@ -145,7 +156,7 @@ class FliggyCrawler(BaseCrawler):
                     time.sleep(0.4)
                     continue
                 if "FAIL_SYS_ILLEGAL_ACCESS" in last or "x5sec" in last or "RGV587" in last:
-                    blocked = True
+                    return False, None, True
                 time.sleep(1.0)
             return False, None, blocked
         except Exception as ex:
@@ -155,6 +166,9 @@ class FliggyCrawler(BaseCrawler):
             client.close()
 
     def _hoop(self, fc, tc, date) -> Optional[dict]:
+        if self._in_risk_cooldown():
+            self.logger.warning("[fliggy] 仍在风控冷却期，跳过 %s", date)
+            return None
         attempt = 0
         while True:
             attempt += 1
@@ -166,6 +180,13 @@ class FliggyCrawler(BaseCrawler):
                     self._rate_record()
                 self.logger.info("[fliggy] %s 第 %d 圈拿到真实价格", date, attempt)
                 return raw
+            if blocked:
+                self._blocked_until = time.time() + self.risk_cooldown_s
+                self.logger.warning(
+                    "[fliggy] %s 命中风控响应，停止重试并冷却 %.0f 秒",
+                    date, self.risk_cooldown_s,
+                )
+                return None
             if self.max_attempts and attempt >= self.max_attempts:
                 self.logger.warning("[fliggy] %s 达到最大重试圈数 %d 仍未拿到价格%s",
                                      date, self.max_attempts, "(疑似风控)" if blocked else "")
@@ -176,6 +197,9 @@ class FliggyCrawler(BaseCrawler):
         results: List[FlightPrice] = []
         fc, tc = from_city.upper(), to_city.upper()
         for date in dates:
+            if self._in_risk_cooldown():
+                self.logger.warning("[fliggy] 本轮已触发风控，跳过剩余日期")
+                break
             raw = self._hoop(fc, tc, date)
             self._dump_raw(raw, f"fliggy_raw_{date}")
             if raw is None:
