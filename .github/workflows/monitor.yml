@@ -98,7 +98,8 @@ jobs:
           mkdir -p docs/data
           python scripts/export_results.py \
             --db data/prices.db \
-            --out docs/data/latest.json
+            --out docs/data/latest.json \
+            --config config.yaml
 
       - name: Render HTML report
         run: |
