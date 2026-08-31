@@ -90,6 +90,8 @@ jobs:
             --output config.yaml
 
       - name: Run price monitor (one round)
+        env:
+          SERVERCHAN_SEND_KEY: ${{ secrets.SERVERCHAN_SEND_KEY || secrets.SERVERCHAN_KEY }}
         run: python main.py --once
         timeout-minutes: 15
 
