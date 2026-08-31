@@ -6,6 +6,7 @@
     python main.py -c other.yaml  # 指定配置文件
 """
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -120,6 +121,11 @@ def main():
         print(f"配置文件不存在: {cfg_path}", file=sys.stderr)
         sys.exit(1)
     cfg = load_config(str(cfg_path))
+    # Secret 只在运行时注入，不写回仓库配置；覆盖定时任务和手动任务两种场景。
+    serverchan_key = os.environ.get("SERVERCHAN_SEND_KEY") or os.environ.get("SERVERCHAN_KEY")
+    if serverchan_key:
+        cfg.setdefault("notifier", {}).setdefault("serverchan", {})
+        cfg["notifier"]["serverchan"].update(enabled=True, send_key=serverchan_key)
 
     out = cfg.get("output", {})
     logger = setup_logger(out.get("log_path", "logs/monitor.log"))
