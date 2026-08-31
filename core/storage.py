@@ -32,6 +32,18 @@ CREATE TABLE IF NOT EXISTS alert_state (
     last_price  REAL NOT NULL,
     last_sent_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS crawl_health (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    platform    TEXT NOT NULL,
+    from_city   TEXT NOT NULL,
+    to_city     TEXT NOT NULL,
+    requested   INTEGER NOT NULL,
+    succeeded   INTEGER NOT NULL,
+    status      TEXT NOT NULL,
+    fetched_at  TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_crawl_health_time ON crawl_health (fetched_at);
 """
 
 
@@ -106,3 +118,15 @@ class PriceStorage:
     def clear_alert_state(self, route_key: str):
         with self._conn() as c:
             c.execute("DELETE FROM alert_state WHERE route_key=?", (route_key,))
+
+    def save_health(self, platform: str, from_city: str, to_city: str,
+                    requested: int, succeeded: int, status: str):
+        from datetime import datetime
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with self._conn() as c:
+            c.execute(
+                "INSERT INTO crawl_health "
+                "(platform, from_city, to_city, requested, succeeded, status, fetched_at) "
+                "VALUES (?,?,?,?,?,?,?)",
+                (platform, from_city, to_city, int(requested), int(succeeded), status, now),
+            )
