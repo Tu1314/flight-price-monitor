@@ -1,6 +1,7 @@
 """低价提醒 + 微信推送（带去抖）"""
 import logging
 import os
+from datetime import datetime
 from typing import List, Optional
 
 from .models import FlightPrice, Route
@@ -8,7 +9,8 @@ from .models import FlightPrice, Route
 
 class Alerter:
     def __init__(self, logger: logging.Logger, notifier=None, storage=None,
-                 push_drop_min: float = 30, push_rise_min: float = 50):
+                 push_drop_min: float = 30, push_rise_min: float = 50,
+                 notify_each_run: bool = True, quiet_hours: dict = None):
         """
         notifier:        推送器（None 表示不推送）
         storage:         用于读写 alert_state（去抖）
@@ -20,22 +22,65 @@ class Alerter:
         self.storage = storage
         self.push_drop_min = push_drop_min
         self.push_rise_min = push_rise_min
+        self.notify_each_run = notify_each_run
+        self.quiet_hours = quiet_hours or {}
 
     def check_and_alert(self, route: Route, prices: List[FlightPrice]):
-        if not prices:
-            return
         # 控制台/日志：三平台对比 + 多日期对比
-        self._compare_platforms(route, prices)
-        self._compare_dates(route, prices)
+        if prices:
+            self._compare_platforms(route, prices)
+            self._compare_dates(route, prices)
 
         # 低价阈值提醒
-        if route.alert_threshold and route.alert_threshold > 0:
+        if route.alert_threshold and route.alert_threshold > 0 and prices and not self.notify_each_run:
             self._handle_threshold(route, prices)
-        else:
+        elif route.alert_threshold <= 0:
             self.logger.info(
                 "[低价] %s->%s threshold is 0; WeChat notifications disabled",
                 route.from_name, route.to_name,
             )
+        if self.notify_each_run:
+            self._push_run(route, prices)
+
+    def _in_quiet_hours(self) -> bool:
+        if not self.quiet_hours.get("enabled"):
+            return False
+        now = datetime.now().strftime("%H:%M")
+        start = str(self.quiet_hours.get("start", "23:00"))
+        end = str(self.quiet_hours.get("end", "07:00"))
+        if start <= end:
+            return start <= now < end
+        return now >= start or now < end
+
+    def _push_run(self, route: Route, prices: List[FlightPrice]):
+        if not self.notifier:
+            self.logger.info("[通知] 未配置通知渠道，跳过本轮报告推送")
+            return
+        if self._in_quiet_hours():
+            self.logger.info("[通知] 当前处于静默时段，延后本轮报告推送")
+            return
+        best = min(prices, key=lambda p: p.price) if prices else None
+        low = bool(best and route.alert_threshold > 0 and best.price <= route.alert_threshold)
+        title = ("低价提醒" if low else "未低价提醒") + f"｜{route.from_name}→{route.to_name}"
+        if best:
+            title += f"｜{best.depart_date} ¥{best.price:.0f}"
+        report = self._build_report_url()
+        lines = [
+            f"## {'机票低价提醒' if low else '机票未低价提醒'}",
+            f"- **航线**：{route.from_name}（{route.from_code}） → {route.to_name}（{route.to_code}）",
+            f"- **查询时间**：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        ]
+        if best:
+            lines += [
+                f"- **当前最低价**：**¥{best.price:.0f}**（{best.depart_date}，{best.platform}）",
+                f"- **设定阈值**：¥{route.alert_threshold:.0f}",
+                f"- **航班**：{best.airline or '未知'} {best.flight_no or '未知'}",
+            ]
+        else:
+            lines.append("- **结果**：本轮暂无可用价格，可能是平台无票或触发风控；已按降级链路处理")
+        lines.append(f"\n[查看完整可视化报告]({report})")
+        ok = self.notifier.send(title, "\n".join(lines))
+        self.logger.info("[通知] %s：%s", title, "成功" if ok else "失败")
 
     # ---------- 控制台对比 ----------
     def _compare_platforms(self, route: Route, prices: List[FlightPrice]):
