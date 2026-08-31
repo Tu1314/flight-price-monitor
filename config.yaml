@@ -27,6 +27,14 @@ routes:
 platforms:
   - qunar
 
+# 首选平台缺失日期时，按此顺序低频降级；不做按请求轮换 IP
+fallback:
+  enabled: true
+  platforms:
+    - qunar
+    - ctrip
+    - tongcheng
+
 # 调度配置
 schedule:
   interval_minutes: 90        # 基础间隔（分钟）
@@ -57,9 +65,21 @@ output:
 
 # 推送配置（低价提醒触发时推送到微信）
 notifier:
+  notify_each_run: true       # 每轮都推送报告；标题区分低价/未低价
   push_drop_min: 30            # 较上次推送价 降幅 ≥ 此值 才再推
   push_rise_min: 50            # 涨幅 ≥ 此值 才再推
   serverchan:
     enabled: false
     send_key: ""               # 在 https://sct.ftqq.com/ 注册后填入你的 SendKey
     channel: ""                # 可选推送通道，多个用 | 分隔
+  quiet_hours:
+    enabled: false
+    start: "23:00"
+    end: "07:00"
+  webhook:
+    enabled: false
+    url: ""
+  telegram:
+    enabled: false
+    bot_token: ""
+    chat_id: ""
