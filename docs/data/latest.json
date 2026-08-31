@@ -3,285 +3,174 @@
   "data": {
     "query": {
       "from": {
-        "code": "LZO",
-        "name": "LZO"
+        "code": "CTU",
+        "name": "CTU"
       },
       "to": {
-        "code": "BJS",
-        "name": "BJS"
+        "code": "TSN",
+        "name": "TSN"
       },
       "depart_dates": [
-        "2026-09-30",
-        "2026-10-01",
-        "2026-10-02"
+        "2026-10-06",
+        "2026-10-07"
       ],
       "return_dates": [],
       "platforms": [
         "fliggy",
         "qunar",
-        "tongcheng",
-        "tuniu"
+        "tongcheng"
       ],
       "threshold": 0,
-      "query_time": "2026-08-30 21:55:08"
+      "query_time": "2026-08-31 03:04:03"
     },
     "results": [
       {
         "platform": "fliggy",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-09-30",
-        "price": 720.0,
-        "airline": "吉祥",
-        "flight_no": "HO7198",
-        "depart_time": "2026-09-30 21:10",
-        "arrive_time": "2026-09-30 23:40",
-        "fetched_at": "2026-08-30 21:51:23"
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 990.0,
+        "airline": "西藏航",
+        "flight_no": "TV9703",
+        "depart_time": "2026-10-06 10:00",
+        "arrive_time": "2026-10-06 18:05",
+        "fetched_at": "2026-08-31 02:53:20"
       },
       {
         "platform": "fliggy",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-01",
-        "price": 630.0,
-        "airline": "吉祥",
-        "flight_no": "HO7198",
-        "depart_time": "2026-10-01 21:10",
-        "arrive_time": "2026-10-01 23:40",
-        "fetched_at": "2026-08-30 21:51:39"
-      },
-      {
-        "platform": "fliggy",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-02",
-        "price": 630.0,
-        "airline": "吉祥",
-        "flight_no": "HO7198",
-        "depart_time": "2026-10-02 21:10",
-        "arrive_time": "2026-10-02 23:40",
-        "fetched_at": "2026-08-30 21:51:54"
-      },
-      {
-        "platform": "tuniu",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-09-30",
-        "price": 720.0,
-        "airline": "厦航",
-        "flight_no": "MF8420",
-        "depart_time": "21:10",
-        "arrive_time": "23:40",
-        "fetched_at": "2026-08-30 21:52:04"
-      },
-      {
-        "platform": "tuniu",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-01",
-        "price": 630.0,
-        "airline": "厦航",
-        "flight_no": "MF8420",
-        "depart_time": "21:10",
-        "arrive_time": "23:40",
-        "fetched_at": "2026-08-30 21:52:19"
-      },
-      {
-        "platform": "tuniu",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-02",
-        "price": 630.0,
-        "airline": "厦航",
-        "flight_no": "MF8420",
-        "depart_time": "21:10",
-        "arrive_time": "23:40",
-        "fetched_at": "2026-08-30 21:52:50"
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "price": 1180.0,
+        "airline": "川航",
+        "flight_no": "3U6861",
+        "depart_time": "2026-10-07 08:20",
+        "arrive_time": "2026-10-07 20:00",
+        "fetched_at": "2026-08-31 02:53:33"
       },
       {
         "platform": "qunar",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-01",
-        "price": 630.0,
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 992.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 21:53:43"
+        "fetched_at": "2026-08-31 03:02:43"
       },
       {
         "platform": "qunar",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-02",
-        "price": 630.0,
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "price": 1283.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 21:53:55"
+        "fetched_at": "2026-08-31 03:02:54"
       },
       {
         "platform": "tongcheng",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-09-30",
-        "price": 720.0,
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
+        "price": 1400.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 21:54:22"
+        "fetched_at": "2026-08-31 03:03:44"
       },
       {
         "platform": "tongcheng",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-01",
-        "price": 630.0,
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
+        "price": 1310.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-08-30 21:54:49"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-02",
-        "price": 630.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-08-30 21:55:08"
+        "fetched_at": "2026-08-31 03:04:03"
       }
     ],
     "summary": [
       {
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-09-30",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-06",
         "per_platform": {
-          "fliggy": 720.0,
-          "tuniu": 720.0,
-          "tongcheng": 720.0
+          "fliggy": 990.0,
+          "qunar": 992.0,
+          "tongcheng": 1400.0
         },
-        "min_price": 720.0,
+        "min_price": 990.0,
         "best_platform": "fliggy",
-        "best_flight": "吉祥HO7198",
-        "best_depart_time": "2026-09-30 21:10",
-        "best_arrive_time": "2026-09-30 23:40"
+        "best_flight": "西藏航TV9703",
+        "best_depart_time": "2026-10-06 10:00",
+        "best_arrive_time": "2026-10-06 18:05"
       },
       {
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-01",
+        "from": "CTU",
+        "to": "TSN",
+        "date": "2026-10-07",
         "per_platform": {
-          "fliggy": 630.0,
-          "tuniu": 630.0,
-          "qunar": 630.0,
-          "tongcheng": 630.0
+          "fliggy": 1180.0,
+          "qunar": 1283.0,
+          "tongcheng": 1310.0
         },
-        "min_price": 630.0,
+        "min_price": 1180.0,
         "best_platform": "fliggy",
-        "best_flight": "吉祥HO7198",
-        "best_depart_time": "2026-10-01 21:10",
-        "best_arrive_time": "2026-10-01 23:40"
-      },
-      {
-        "from": "LZO",
-        "to": "BJS",
-        "date": "2026-10-02",
-        "per_platform": {
-          "fliggy": 630.0,
-          "tuniu": 630.0,
-          "qunar": 630.0,
-          "tongcheng": 630.0
-        },
-        "min_price": 630.0,
-        "best_platform": "fliggy",
-        "best_flight": "吉祥HO7198",
-        "best_depart_time": "2026-10-02 21:10",
-        "best_arrive_time": "2026-10-02 23:40"
+        "best_flight": "川航3U6861",
+        "best_depart_time": "2026-10-07 08:20",
+        "best_arrive_time": "2026-10-07 20:00"
       }
     ],
     "trend": {
-      "2026-09-30": {
+      "2026-10-06": {
         "fliggy": [
           {
-            "t": "2026-08-30 21:51:23",
-            "v": 720.0
-          }
-        ],
-        "tuniu": [
-          {
-            "t": "2026-08-30 21:52:04",
-            "v": 720.0
-          }
-        ],
-        "tongcheng": [
-          {
-            "t": "2026-08-30 21:54:22",
-            "v": 720.0
-          }
-        ]
-      },
-      "2026-10-01": {
-        "fliggy": [
-          {
-            "t": "2026-08-30 21:51:39",
-            "v": 630.0
-          }
-        ],
-        "tuniu": [
-          {
-            "t": "2026-08-30 21:52:19",
-            "v": 630.0
+            "t": "2026-08-31 02:53:20",
+            "v": 990.0
           }
         ],
         "qunar": [
           {
-            "t": "2026-08-30 21:53:43",
-            "v": 630.0
+            "t": "2026-08-31 03:02:43",
+            "v": 992.0
           }
         ],
         "tongcheng": [
           {
-            "t": "2026-08-30 21:54:49",
-            "v": 630.0
+            "t": "2026-08-31 03:03:44",
+            "v": 1400.0
           }
         ]
       },
-      "2026-10-02": {
+      "2026-10-07": {
         "fliggy": [
           {
-            "t": "2026-08-30 21:51:54",
-            "v": 630.0
-          }
-        ],
-        "tuniu": [
-          {
-            "t": "2026-08-30 21:52:50",
-            "v": 630.0
+            "t": "2026-08-31 02:53:33",
+            "v": 1180.0
           }
         ],
         "qunar": [
           {
-            "t": "2026-08-30 21:53:55",
-            "v": 630.0
+            "t": "2026-08-31 03:02:54",
+            "v": 1283.0
           }
         ],
         "tongcheng": [
           {
-            "t": "2026-08-30 21:55:08",
-            "v": 630.0
+            "t": "2026-08-31 03:04:03",
+            "v": 1310.0
           }
         ]
       }
     },
-    "generated_at": "2026-08-30T21:55:14.982349Z"
+    "generated_at": "2026-08-31T03:04:14.865368Z"
   }
 }
