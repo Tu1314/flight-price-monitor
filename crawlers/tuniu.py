@@ -56,12 +56,14 @@ class TuniuCrawler(BaseCrawler):
 
     def __init__(self, config: dict, logger):
         super().__init__(config, logger)
-        self.max_attempts: int = int(config.get("max_attempts", 5))
-        self.max_poll: int = int(config.get("tuniu_max_poll", 10))
-        self.backoff_s: float = float(config.get("backoff_seconds", 5))
+        self.max_attempts: int = int(config.get("max_attempts", 2))
+        self.max_poll: int = int(config.get("tuniu_max_poll", 6))
+        self.backoff_s: float = float(config.get("backoff_seconds", 8))
+        self.risk_cooldown_s: float = float(config.get("risk_cooldown_seconds", 900))
         self.rate_limit: bool = bool(config.get("rate_limit", True))
         self._success_times: list = []
         self._rate_lock = threading.Lock()
+        self._blocked_until = 0.0
 
     def login_url(self) -> str:
         return "https://m.tuniu.com/login"
@@ -79,6 +81,9 @@ class TuniuCrawler(BaseCrawler):
     def _rate_record(self):
         with self._rate_lock:
             self._success_times.append(time.time())
+
+    def _in_risk_cooldown(self) -> bool:
+        return time.time() < self._blocked_until
 
     @staticmethod
     def _new_guid() -> str:
@@ -134,15 +139,23 @@ class TuniuCrawler(BaseCrawler):
 
     @classmethod
     def _looks_like_real_price(cls, body: str) -> bool:
-        if not body or '"success":true' not in body:
-            return False
-        if '"fareList"' not in body and '"salePrice"' not in body:
+        if not body:
             return False
         try:
             obj = json.loads(body)
         except Exception:
             return False
         data = obj.get("data") or {}
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except Exception:
+                return False
+        success = obj.get("success")
+        if success is None:
+            success = data.get("success") if isinstance(data, dict) else None
+        if success not in (True, 1, "1", "true", "True"):
+            return False
         return bool(data.get("fareList")) or cls._has_price(data)
 
     def _one_attempt(self, depart_code, arrive_code, depart_date):
@@ -185,10 +198,11 @@ class TuniuCrawler(BaseCrawler):
                 d["pollTag"] = poll
                 r = client.get(LIST_API, params={"d": json.dumps(d, ensure_ascii=False)}, headers=api_hdrs)
                 last = r.text
+                if "179991" in last:
+                    # 风控响应下继续轮询只会增加命中次数；交给上层进入冷却。
+                    return False, None, True
                 if self._looks_like_real_price(last):
                     return True, json.loads(last), blocked
-                if "179991" in last:
-                    blocked = True
                 time.sleep(1.5)
             return False, None, blocked
         except Exception as ex:
@@ -198,6 +212,9 @@ class TuniuCrawler(BaseCrawler):
             client.close()
 
     def _hoop(self, fc, tc, date) -> Optional[dict]:
+        if self._in_risk_cooldown():
+            self.logger.warning("[tuniu] 仍在风控冷却期，跳过 %s", date)
+            return None
         attempt = 0
         while True:
             attempt += 1
@@ -209,6 +226,13 @@ class TuniuCrawler(BaseCrawler):
                     self._rate_record()
                 self.logger.info("[tuniu] %s 第 %d 圈拿到真实价格", date, attempt)
                 return raw
+            if blocked:
+                self._blocked_until = time.time() + self.risk_cooldown_s
+                self.logger.warning(
+                    "[tuniu] %s 命中 179991，停止重试并冷却 %.0f 秒",
+                    date, self.risk_cooldown_s,
+                )
+                return None
             if self.max_attempts and attempt >= self.max_attempts:
                 self.logger.warning("[tuniu] %s 达到最大重试圈数 %d 仍未拿到价格%s",
                                      date, self.max_attempts, "(疑似风控/179991)" if blocked else "")
@@ -219,6 +243,9 @@ class TuniuCrawler(BaseCrawler):
         results: List[FlightPrice] = []
         fc, tc = from_city.upper(), to_city.upper()
         for date in dates:
+            if self._in_risk_cooldown():
+                self.logger.warning("[tuniu] 本轮已触发风控，跳过剩余日期")
+                break
             raw = self._hoop(fc, tc, date)
             self._dump_raw(raw, f"tuniu_raw_{date}")
             if raw is None:
