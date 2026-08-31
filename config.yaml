@@ -39,6 +39,11 @@ crawler:
   timeout_seconds: 45
   delay_min: 5                 # 单次请求间随机等待（秒）
   delay_max: 15
+  max_attempts: 2              # 单日期最多重试圈数；风控时会提前熔断
+  fliggy_max_poll: 3
+  tuniu_max_poll: 6
+  backoff_seconds: 8
+  risk_cooldown_seconds: 900   # 命中风控后本轮停止该平台请求
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
   mobile_user_agent: ""        # 留空用内置 iPhone Safari UA
   debug: true                  # 解析失败时保存截图+HTML 到 debug_dir
