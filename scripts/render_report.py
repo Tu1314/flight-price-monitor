@@ -59,6 +59,10 @@ tr:last-child td{border-bottom:none}
 .lline{width:20px;height:3px;border-radius:2px;display:inline-block}
 canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
 .nodata{text-align:center;padding:40px;color:var(--sub);font-size:13px}
+.status{padding:12px 16px;border-radius:10px;margin-bottom:18px;font-weight:700}
+.status.low{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.status.normal{background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
+.muted{color:var(--sub);font-size:12px}
 .footer{text-align:center;color:#b0b7c3;font-size:12px;padding:20px 0 0}
 """
 
@@ -111,7 +115,7 @@ def e(s):
     return html_mod.escape(str(s))
 
 
-def render(q, summary, trend):
+def render(q, summary, trend, health=None, calendar=None, status="not_low"):
     fn, fc = q["from"]["name"], q["from"]["code"]
     tn, tc = q["to"]["name"],   q["to"]["code"]
     platforms = q["platforms"]
@@ -123,6 +127,8 @@ def render(q, summary, trend):
         n = PLATFORM_NAMES.get(p, p)
         return f"<th><span class='dot' style='background:{c}'></span>{e(n)}</th>"
     ths = "".join(th(p) for p in platforms)
+    health = health or []
+    calendar = calendar or []
 
     # 表体
     rows_html = []
@@ -145,7 +151,8 @@ def render(q, summary, trend):
             f"{cells}"
             f"<td class='best'>¥{s['min_price']:.0f}</td>"
             f"<td>{e(s['best_flight'])}<br><span class='badge' style='background:{bc}'>{e(bn)}</span></td>"
-            f"<td class='time'>{e(s['best_depart_time'])}<br>→ {e(s['best_arrive_time'])}</td>"
+            f"<td class='time'>{e(s['best_depart_time'])}<br>→ {e(s['best_arrive_time'])}<br>"
+            f"含税 ¥{e(s.get('tax') or '未知')} · 行李 {e(s.get('baggage') or '未知')} · 余票 {e(s.get('seats') or '未知')}</td>"
             f"</tr>"
         )
 
@@ -172,6 +179,20 @@ def render(q, summary, trend):
     cm = {p: PLATFORM_COLORS.get(p, "#888") for p in all_plat}
     nm = {p: PLATFORM_NAMES.get(p, p) for p in all_plat}
 
+    status_class = "low" if status == "low_price" else "normal"
+    status_text = "低价提醒" if status == "low_price" else "未低价提醒"
+    nearby = q.get("nearby_airports", {})
+    nearby_text = f"出发机场：{' / '.join(nearby.get('from', [fc]))}　到达机场：{' / '.join(nearby.get('to', [tc]))}"
+    cal_rows = []
+    for item in calendar:
+        price = f"¥{item['min_price']:.0f}" if item.get("min_price") is not None else "暂无价格"
+        base = f"¥{item['baseline']:.0f}" if item.get("baseline") is not None else "—"
+        sig = item.get("signal", "—")
+        cal_rows.append(f"<tr><td>{e(item.get('date'))}</td><td class='{'best' if sig == '偏低' else ''}'>{price}</td><td>{base}</td><td>{e(sig)}</td><td>{e(item.get('forecast', '暂无预测'))}</td><td>{e(PLATFORM_NAMES.get(item.get('best_platform'), item.get('best_platform') or '—'))}</td></tr>")
+    health_rows = []
+    for item in health:
+        health_rows.append(f"<tr><td>{e(PLATFORM_NAMES.get(item.get('platform'), item.get('platform')))}</td><td>{e(item.get('dates_ok', 0))}/{e(item.get('dates_expected', 0))}</td><td>{e(item.get('success_rate', 0))}%</td><td>{e(item.get('status', '—'))}</td><td>{e(item.get('last_checked', '—'))}</td></tr>")
+
     js = Template(JS_TPL).substitute(
         TREND_DATA=json.dumps(trend_filtered, ensure_ascii=False),
         COLOR_MAP=json.dumps(cm, ensure_ascii=False),
@@ -192,6 +213,8 @@ def render(q, summary, trend):
     <h1>✈️ {e(fn)}（{e(fc)}）⇄ {e(tn)}（{e(tc)}）</h1>
     <div class="sub">机票多平台价格监控 · {e(q['query_time'])} · 数据仅供参考</div>
   </div>
+  <div class="status {status_class}">{status_text} <span class="muted">· 本轮报告每次运行都会更新</span></div>
+  <div class="card"><div class="card-title">附近机场组合</div><div>{e(nearby_text)}</div></div>
   <div class="card">
     <div class="card-title">📊 比价结果</div>
     <div class="table-wrap">
@@ -201,6 +224,16 @@ def render(q, summary, trend):
       </table>
     </div>
     {total_html}
+  </div>
+  <div class="card">
+    <div class="card-title">低价日历 · 历史基线 · 价格预测</div>
+    <div class="table-wrap"><table><thead><tr><th>日期</th><th>当前最低</th><th>历史中位数</th><th>信号</th><th>预测</th><th>最佳平台</th></tr></thead>
+    <tbody>{''.join(cal_rows) or '<tr><td colspan="6" class="nodata">暂无日期数据</td></tr>'}</tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">平台健康度与降级状态</div>
+    <div class="table-wrap"><table><thead><tr><th>平台</th><th>覆盖日期</th><th>成功率</th><th>状态</th><th>最近检查</th></tr></thead>
+    <tbody>{''.join(health_rows) or '<tr><td colspan="5" class="nodata">暂无健康度数据</td></tr>'}</tbody></table></div>
   </div>
   <div class="card">
     <div class="card-title">📈 价格走势（近7天，多平台）</div>
@@ -235,7 +268,8 @@ def main():
 
     out = Path(args.out_dir) / "report.html"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render(data["query"], data["summary"], trend), encoding="utf-8")
+    out.write_text(render(data["query"], data.get("summary", []), trend,
+                          data.get("health"), data.get("calendar"), data.get("status", "not_low")), encoding="utf-8")
     print(f"Report → {out}")
 
 
