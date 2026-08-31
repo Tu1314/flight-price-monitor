@@ -27,6 +27,11 @@ routes:
 platforms:
   - qunar
 
+# 同城机场组合会逐一查询并在报告中合并展示
+airport_combinations:
+  CTU: [CTU, TFU]
+  TSN: [TSN]
+
 # 首选平台缺失日期时，按此顺序低频降级；不做按请求轮换 IP
 fallback:
   enabled: true
