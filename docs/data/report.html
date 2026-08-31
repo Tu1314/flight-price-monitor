@@ -52,6 +52,10 @@ tr:last-child td{border-bottom:none}
 .lline{width:20px;height:3px;border-radius:2px;display:inline-block}
 canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
 .nodata{text-align:center;padding:40px;color:var(--sub);font-size:13px}
+.status{padding:12px 16px;border-radius:10px;margin-bottom:18px;font-weight:700}
+.status.low{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.status.normal{background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
+.muted{color:var(--sub);font-size:12px}
 .footer{text-align:center;color:#b0b7c3;font-size:12px;padding:20px 0 0}
 </style>
 </head>
@@ -59,17 +63,29 @@ canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
 <div class="page">
   <div class="hero">
     <h1>✈️ CTU（CTU）⇄ TSN（TSN）</h1>
-    <div class="sub">机票多平台价格监控 · 2026-08-31 03:04:03 · 数据仅供参考</div>
+    <div class="sub">机票多平台价格监控 · 2026-08-31 04:30:31 · 数据仅供参考</div>
   </div>
+  <div class="status normal">未低价提醒 <span class="muted">· 本轮报告每次运行都会更新</span></div>
+  <div class="card"><div class="card-title">附近机场组合</div><div>出发机场：CTU / TFU　到达机场：TSN</div></div>
   <div class="card">
     <div class="card-title">📊 比价结果</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>航线/日期</th><th><span class='dot' style='background:#FF6B00'></span>飞猪</th><th><span class='dot' style='background:#FF4500'></span>去哪儿</th><th><span class='dot' style='background:#7C3AED'></span>同程</th><th>最低价</th><th>最低价航班</th><th>起降时间</th></tr></thead>
-        <tbody><tr><td><span class='tag-d'>去程</span> 2026-10-06</td><td class='best'>¥990</td><td>¥992</td><td>¥1400</td><td class='best'>¥990</td><td>西藏航TV9703<br><span class='badge' style='background:#FF6B00'>飞猪</span></td><td class='time'>2026-10-06 10:00<br>→ 2026-10-06 18:05</td></tr><tr><td><span class='tag-d'>去程</span> 2026-10-07</td><td class='best'>¥1180</td><td>¥1283</td><td>¥1310</td><td class='best'>¥1180</td><td>川航3U6861<br><span class='badge' style='background:#FF6B00'>飞猪</span></td><td class='time'>2026-10-07 08:20<br>→ 2026-10-07 20:00</td></tr></tbody>
+        <thead><tr><th>航线/日期</th><th><span class='dot' style='background:#FF4500'></span>去哪儿</th><th><span class='dot' style='background:#7C3AED'></span>同程</th><th><span class='dot' style='background:#0086F6'></span>携程</th><th>最低价</th><th>最低价航班</th><th>起降时间</th></tr></thead>
+        <tbody></tbody>
       </table>
     </div>
     
+  </div>
+  <div class="card">
+    <div class="card-title">低价日历 · 历史基线 · 价格预测</div>
+    <div class="table-wrap"><table><thead><tr><th>日期</th><th>当前最低</th><th>历史中位数</th><th>信号</th><th>预测</th><th>最佳平台</th></tr></thead>
+    <tbody><tr><td>2026-10-04</td><td class=''>暂无价格</td><td>—</td><td>暂无价格</td><td>暂无预测</td><td>—</td></tr><tr><td>2026-10-05</td><td class=''>暂无价格</td><td>—</td><td>暂无价格</td><td>暂无预测</td><td>—</td></tr><tr><td>2026-10-06</td><td class=''>暂无价格</td><td>—</td><td>暂无价格</td><td>暂无预测</td><td>—</td></tr><tr><td>2026-10-07</td><td class=''>暂无价格</td><td>—</td><td>暂无价格</td><td>暂无预测</td><td>—</td></tr></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">平台健康度与降级状态</div>
+    <div class="table-wrap"><table><thead><tr><th>平台</th><th>覆盖日期</th><th>成功率</th><th>状态</th><th>最近检查</th></tr></thead>
+    <tbody><tr><td>去哪儿</td><td>0/3</td><td>0.0%</td><td>no_results</td><td>2026-08-31 04:30:28</td></tr><tr><td>同程</td><td>0/3</td><td>0.0%</td><td>no_results</td><td>2026-08-31 04:30:29</td></tr><tr><td>携程</td><td>0/3</td><td>0.0%</td><td>no_results</td><td>2026-08-31 04:30:28</td></tr></tbody></table></div>
   </div>
   <div class="card">
     <div class="card-title">📈 价格走势（近7天，多平台）</div>
@@ -78,10 +94,10 @@ canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
     <canvas id="cv" height="250"></canvas>
     <div class="nodata" id="nd" style="display:none">暂无足够历史数据，随监控积累后将显示</div>
   </div>
-  <div class="footer">由 flight-price-monitor 自动生成 · 飞猪、去哪儿、同程 · 以实际购票页面为准</div>
+  <div class="footer">由 flight-price-monitor 自动生成 · 去哪儿、同程、携程 · 以实际购票页面为准</div>
 </div>
 <script>
-const TD={"2026-10-06": {"fliggy": [{"t": "2026-08-31 02:53:20", "v": 990.0}], "qunar": [{"t": "2026-08-31 03:02:43", "v": 992.0}], "tongcheng": [{"t": "2026-08-31 03:03:44", "v": 1400.0}]}, "2026-10-07": {"fliggy": [{"t": "2026-08-31 02:53:33", "v": 1180.0}], "qunar": [{"t": "2026-08-31 03:02:54", "v": 1283.0}], "tongcheng": [{"t": "2026-08-31 03:04:03", "v": 1310.0}]}};const CM={"fliggy": "#FF6B00", "qunar": "#FF4500", "tongcheng": "#7C3AED"};const NM={"fliggy": "飞猪", "qunar": "去哪儿", "tongcheng": "同程"};
+const TD={};const CM={};const NM={};
 var allDates=Object.keys(TD).sort(),idx=0;
 var cv=document.getElementById('cv'),nd=document.getElementById('nd'),ctx=cv?cv.getContext('2d'):null;
 function tabs(){var el=document.getElementById('tabs');if(!el)return;el.innerHTML='';
