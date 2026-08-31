@@ -7,21 +7,21 @@ on:
   workflow_dispatch:
     inputs:
       from_code:
-        description: '出发地三字码 (如 LZO)'
+        description: '出发地三字码 (如 CTU)'
         required: true
-        default: 'LZO'
+        default: 'CTU'
       from_name:
-        description: '出发地名称 (如 泸州)'
+        description: '出发地名称 (如 成都)'
         required: true
-        default: '泸州'
+        default: '成都'
       to_code:
-        description: '目的地三字码 (如 BJS)'
+        description: '目的地三字码 (如 TSN)'
         required: true
-        default: 'BJS'
+        default: 'TSN'
       to_name:
-        description: '目的地名称 (如 北京)'
+        description: '目的地名称 (如 天津)'
         required: true
-        default: '北京'
+        default: '天津'
       depart_dates:
         description: '去程日期, 逗号分隔 (如 2026-09-30,2026-10-01)'
         required: true
@@ -71,16 +71,17 @@ jobs:
           python -m playwright install chromium --with-deps
 
       - name: Build config from workflow_dispatch or defaults
+        if: github.event_name == 'workflow_dispatch'
         env:
           # SERVERCHAN_SEND_KEY is documented; SERVERCHAN_KEY is supported
           # for compatibility with existing repository secrets.
           SERVERCHAN_SEND_KEY: ${{ secrets.SERVERCHAN_SEND_KEY || secrets.SERVERCHAN_KEY }}
         run: |
           python scripts/build_config.py \
-            --from-code "${{ github.event.inputs.from_code || 'LZO' }}" \
-            --from-name "${{ github.event.inputs.from_name || '泸州' }}" \
-            --to-code "${{ github.event.inputs.to_code || 'BJS' }}" \
-            --to-name "${{ github.event.inputs.to_name || '北京' }}" \
+            --from-code "${{ github.event.inputs.from_code || 'CTU' }}" \
+            --from-name "${{ github.event.inputs.from_name || '成都' }}" \
+            --to-code "${{ github.event.inputs.to_code || 'TSN' }}" \
+            --to-name "${{ github.event.inputs.to_name || '天津' }}" \
             --dates "${{ github.event.inputs.depart_dates || '2026-09-30,2026-10-01,2026-10-02' }}" \
             --return-dates "${{ github.event.inputs.return_dates || '' }}" \
             --trip-type "${{ github.event.inputs.trip_type || 'one_way' }}" \
