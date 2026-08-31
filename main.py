@@ -58,50 +58,63 @@ def make_job(cfg: dict, logger, storage: PriceStorage, alerter: Alerter):
             continue
         crawler_map[name] = cls(crawler_cfg, logger)
 
-    def job():
-        logger.info("===== 开始一轮抓取 =====")
-        for route in routes:
-            all_prices = []
-            covered_dates = set()
-            ordered_names = list(platforms)
-            for name in ordered_names:
+    airport_cfg = cfg.get("airport_combinations", {}) or {}
+
+    def crawl_codes(route, from_code, to_code):
+        all_prices = []
+        covered_dates = set()
+        ordered_names = list(platforms)
+        for name in ordered_names:
+            c = crawler_map.get(name)
+            if c is None:
+                continue
+            prices = c.safe_fetch(from_code, to_code, route.dates)
+            storage.save_many(prices)
+            all_prices.extend(prices)
+            covered_dates.update(p.depart_date for p in prices)
+            blocked = bool(getattr(c, "_in_risk_cooldown", lambda: False)())
+            storage.save_health(
+                name, from_code, to_code, len(route.dates),
+                len({p.depart_date for p in prices}),
+                "risk_blocked" if blocked else ("ok" if prices else "no_results"),
+            )
+
+        if fallback_enabled:
+            missing = [d for d in route.dates if d not in covered_dates]
+            for name in fallback_platforms:
+                if not missing:
+                    break
                 c = crawler_map.get(name)
-                if c is None:
+                if c is None or name in ordered_names:
                     continue
-                prices = c.safe_fetch(route.from_code, route.to_code, route.dates)
+                logger.warning("[降级] 首选平台未覆盖 %s→%s，尝试 %s 日期=%s",
+                               from_code, to_code, name, missing)
+                prices = c.safe_fetch(from_code, to_code, missing)
                 storage.save_many(prices)
                 all_prices.extend(prices)
                 covered_dates.update(p.depart_date for p in prices)
                 blocked = bool(getattr(c, "_in_risk_cooldown", lambda: False)())
                 storage.save_health(
-                    name, route.from_code, route.to_code,
-                    len(route.dates), len({p.depart_date for p in prices}),
+                    name, from_code, to_code, len(missing),
+                    len({p.depart_date for p in prices}),
                     "risk_blocked" if blocked else ("ok" if prices else "no_results"),
                 )
-
-            # 仅对缺失日期执行低频降级，避免被风控平台继续加压。
-            if fallback_enabled:
                 missing = [d for d in route.dates if d not in covered_dates]
-                for name in fallback_platforms:
-                    if not missing:
-                        break
-                    c = crawler_map.get(name)
-                    if c is None or name in ordered_names:
-                        continue
-                    logger.warning("[降级] 首选平台未覆盖 %s，尝试 %s 日期=%s", route.to_code, name, missing)
-                    prices = c.safe_fetch(route.from_code, route.to_code, missing)
-                    storage.save_many(prices)
-                    all_prices.extend(prices)
-                    covered_dates.update(p.depart_date for p in prices)
-                    blocked = bool(getattr(c, "_in_risk_cooldown", lambda: False)())
-                    storage.save_health(
-                        name, route.from_code, route.to_code,
-                        len(missing), len({p.depart_date for p in prices}),
-                        "risk_blocked" if blocked else ("ok" if prices else "no_results"),
-                    )
-                    missing = [d for d in route.dates if d not in covered_dates]
-                if missing:
-                    logger.warning("[降级] 仍有日期无可用价格: %s", missing)
+            if missing:
+                logger.warning("[降级] %s→%s 仍有日期无可用价格: %s",
+                               from_code, to_code, missing)
+        return all_prices
+
+    def job():
+        logger.info("===== 开始一轮抓取 =====")
+        for route in routes:
+            from_codes = airport_cfg.get(route.from_code, [route.from_code])
+            to_codes = airport_cfg.get(route.to_code, [route.to_code])
+            all_prices = []
+            for from_code in from_codes:
+                for to_code in to_codes:
+                    logger.info("[机场组合] 查询 %s→%s", from_code, to_code)
+                    all_prices.extend(crawl_codes(route, from_code, to_code))
             alerter.check_and_alert(route, all_prices)
         logger.info("===== 本轮抓取结束 =====")
 
