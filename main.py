@@ -42,24 +42,65 @@ def build_routes(cfg: dict):
 def make_job(cfg: dict, logger, storage: PriceStorage, alerter: Alerter):
     crawler_cfg = cfg.get("crawler", {})
     platforms = cfg.get("platforms", ["ctrip", "fliggy", "tongcheng"])
+    fallback_cfg = cfg.get("fallback", {}) or {}
+    fallback_enabled = bool(fallback_cfg.get("enabled", True))
+    fallback_platforms = fallback_cfg.get("platforms", ["qunar", "ctrip", "tongcheng"])
     routes = build_routes(cfg)
 
-    crawlers = []
-    for name in platforms:
+    crawler_map = {}
+    for name in list(platforms) + (list(fallback_platforms) if fallback_enabled else []):
+        if name in crawler_map:
+            continue
         cls = REGISTRY.get(name)
         if cls is None:
             logger.warning("未知平台: %s，已跳过", name)
             continue
-        crawlers.append(cls(crawler_cfg, logger))
+        crawler_map[name] = cls(crawler_cfg, logger)
 
     def job():
         logger.info("===== 开始一轮抓取 =====")
         for route in routes:
             all_prices = []
-            for c in crawlers:
+            covered_dates = set()
+            ordered_names = list(platforms)
+            for name in ordered_names:
+                c = crawler_map.get(name)
+                if c is None:
+                    continue
                 prices = c.safe_fetch(route.from_code, route.to_code, route.dates)
                 storage.save_many(prices)
                 all_prices.extend(prices)
+                covered_dates.update(p.depart_date for p in prices)
+                blocked = bool(getattr(c, "_in_risk_cooldown", lambda: False)())
+                storage.save_health(
+                    name, route.from_code, route.to_code,
+                    len(route.dates), len({p.depart_date for p in prices}),
+                    "risk_blocked" if blocked else ("ok" if prices else "no_results"),
+                )
+
+            # 仅对缺失日期执行低频降级，避免被风控平台继续加压。
+            if fallback_enabled:
+                missing = [d for d in route.dates if d not in covered_dates]
+                for name in fallback_platforms:
+                    if not missing:
+                        break
+                    c = crawler_map.get(name)
+                    if c is None or name in ordered_names:
+                        continue
+                    logger.warning("[降级] 首选平台未覆盖 %s，尝试 %s 日期=%s", route.to_code, name, missing)
+                    prices = c.safe_fetch(route.from_code, route.to_code, missing)
+                    storage.save_many(prices)
+                    all_prices.extend(prices)
+                    covered_dates.update(p.depart_date for p in prices)
+                    blocked = bool(getattr(c, "_in_risk_cooldown", lambda: False)())
+                    storage.save_health(
+                        name, route.from_code, route.to_code,
+                        len(missing), len({p.depart_date for p in prices}),
+                        "risk_blocked" if blocked else ("ok" if prices else "no_results"),
+                    )
+                    missing = [d for d in route.dates if d not in covered_dates]
+                if missing:
+                    logger.warning("[降级] 仍有日期无可用价格: %s", missing)
             alerter.check_and_alert(route, all_prices)
         logger.info("===== 本轮抓取结束 =====")
 
@@ -95,6 +136,8 @@ def main():
         storage=storage,
         push_drop_min=float(notify_cfg.get("push_drop_min", 30)),
         push_rise_min=float(notify_cfg.get("push_rise_min", 50)),
+        notify_each_run=bool(notify_cfg.get("notify_each_run", True)),
+        quiet_hours=notify_cfg.get("quiet_hours") or {},
     )
 
     # ---- 登录模式 ----
