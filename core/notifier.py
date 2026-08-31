@@ -23,7 +23,32 @@ class ServerChanNotifier:
     def send(self, title: str, desp: str = "") -> bool:
         if not self.send_key:
             self.logger.debug("Server酱 SendKey 未配置，跳过推送")
-        return False
+            return False
+        url = self.ENDPOINT_TPL.format(key=self.send_key)
+        payload = {
+            "title": title[:60],
+            "desp": desp[:32000],
+        }
+        if self.channel:
+            payload["channel"] = self.channel
+        data = urllib.parse.urlencode(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url, data=data, method="POST",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                body = resp.read().decode("utf-8", "ignore")
+                obj = json.loads(body)
+                code = obj.get("code", -1)
+                if code == 0:
+                    self.logger.info("Server酱 推送成功: %s", title)
+                    return True
+                self.logger.warning("Server酱 推送失败 code=%s body=%s", code, body[:200])
+                return False
+        except Exception as e:
+            self.logger.warning("Server酱 推送异常: %s", e)
+            return False
 
 
 class WebhookNotifier:
@@ -74,35 +99,6 @@ class MultiNotifier:
     def send(self, title: str, desp: str = "") -> bool:
         results = [n.send(title, desp) for n in self.notifiers]
         return any(results)
-        url = self.ENDPOINT_TPL.format(key=self.send_key)
-        payload = {
-            # 限60字符
-            "title": title[:60],
-            # 支持 markdown
-            "desp": desp[:32000],
-        }
-        if self.channel:
-            payload["channel"] = self.channel
-
-        data = urllib.parse.urlencode(payload).encode("utf-8")
-        req = urllib.request.Request(
-            url, data=data, method="POST",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                body = resp.read().decode("utf-8", "ignore")
-                obj = json.loads(body)
-                code = obj.get("code", -1)
-                if code == 0:
-                    self.logger.info("Server酱 推送成功: %s", title)
-                    return True
-                self.logger.warning("Server酱 推送失败 code=%s body=%s",
-                                    code, body[:200])
-                return False
-        except Exception as e:
-            self.logger.warning("Server酱 推送异常: %s", e)
-            return False
 
 
 def build_notifier(cfg: dict, logger: logging.Logger):
