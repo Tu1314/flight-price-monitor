@@ -38,6 +38,7 @@ def main():
     elif args.trip_type == "round_trip" and not returns:
         raise SystemExit("round_trip requires at least one return date")
     platforms = [p.strip() for p in args.platforms.split(",") if p.strip()]
+    from_airports = [args.from_code, "TFU"] if args.from_code.upper() == "CTU" else [args.from_code]
 
     lines = ["routes:"]
     lines += [
@@ -65,6 +66,10 @@ def main():
     lines += ["", "platforms:"]
     lines += [f"  - {p}" for p in platforms]
     lines += [
+        "",
+        "airport_combinations:",
+        f"  {args.from_code}: [{', '.join(from_airports)}]",
+        f"  {args.to_code}: [{args.to_code}]",
         "",
         "fallback:",
         "  enabled: true",
