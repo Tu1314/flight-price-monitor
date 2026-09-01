@@ -23,7 +23,7 @@
         "ctrip"
       ],
       "threshold": 850.0,
-      "query_time": "2026-09-01 04:13:07",
+      "query_time": "2026-09-01 12:27:57",
       "nearby_airports": {
         "from": [
           "CTU",
@@ -45,7 +45,7 @@
         "dates_expected": 3,
         "success_rate": 0.0,
         "status": "no_results",
-        "last_checked": "2026-09-01 04:13:04"
+        "last_checked": "2026-09-01 12:27:54"
       },
       {
         "platform": "tongcheng",
@@ -54,7 +54,7 @@
         "dates_expected": 3,
         "success_rate": 0.0,
         "status": "no_results",
-        "last_checked": "2026-09-01 04:13:05"
+        "last_checked": "2026-09-01 12:27:55"
       },
       {
         "platform": "ctrip",
@@ -63,7 +63,7 @@
         "dates_expected": 3,
         "success_rate": 0.0,
         "status": "no_results",
-        "last_checked": "2026-09-01 04:13:04"
+        "last_checked": "2026-09-01 12:27:54"
       }
     ],
     "calendar": [
@@ -102,6 +102,6 @@
     ],
     "baseline": {},
     "status": "not_low",
-    "generated_at": "2026-09-01T04:13:07.177618Z"
+    "generated_at": "2026-09-01T12:27:57.195718Z"
   }
 }
