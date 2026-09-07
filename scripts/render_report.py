@@ -272,7 +272,7 @@ def render(q, summary, trend, health=None, calendar=None, status="not_low"):
     <tbody>{''.join(health_rows) or '<tr><td colspan="5" class="nodata">暂无健康度数据</td></tr>'}</tbody></table></div>
   </div>
   <div class="card">
-    <div class="card-title">📈 价格走势（近7天，多平台）</div>
+    <div class="card-title">📈 价格走势（近7天抓取趋势，多平台）</div>
     <div class="trend-tabs" id="tabs"></div>
     <div class="legend" id="lg"></div>
     <canvas id="cv" height="250"></canvas>
