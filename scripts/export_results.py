@@ -91,6 +91,8 @@ def main():
     ap.add_argument("--db", default="data/prices.db")
     ap.add_argument("--out", default="docs/data/latest.json")
     ap.add_argument("--config", default="config.yaml")
+    ap.add_argument("--history-file", default=None,
+                    help="从上一轮 JSON 继承趋势，解决 Actions 临时数据库不持久的问题")
     ap.add_argument("--window-minutes", type=int, default=30,
                     help="把最近 N 分钟的抓取视为\"同一轮\"")
     args = ap.parse_args()
@@ -209,10 +211,35 @@ def main():
             "forecast": forecast,
         })
 
-    # 历史 trend_data
+    # 历史 trend_data。Actions 每轮都是全新工作区，先合并上一轮已提交的 JSON。
     trend: dict = {}
     for fc, tc, d, p, price, ts in hist_rows:
         trend.setdefault(d, {}).setdefault(p, []).append({"t": ts, "v": float(price)})
+    history_path = Path(args.history_file or args.out)
+    if history_path.exists():
+        try:
+            previous = json.loads(history_path.read_text(encoding="utf-8"))
+            previous_trend = ((previous.get("data") or {}).get("trend") or {})
+            for date, platforms_by_date in previous_trend.items():
+                for platform, points in (platforms_by_date or {}).items():
+                    trend.setdefault(date, {}).setdefault(platform, []).extend(points or [])
+        except Exception:
+            pass
+    # 去重并只保留抓取时间最近 7 天的点；基线仍使用近 30 天数据。
+    trend_cutoff = datetime.fromisoformat(latest_ts) - timedelta(days=7)
+    for date, platforms_by_date in list(trend.items()):
+        for platform, points in list(platforms_by_date.items()):
+            unique = {}
+            for point in points:
+                try:
+                    ts = datetime.fromisoformat(str(point.get("t")))
+                except Exception:
+                    continue
+                if ts >= trend_cutoff:
+                    unique[(str(point.get("t")), float(point.get("v", 0)))] = {
+                        "t": str(point.get("t")), "v": float(point.get("v", 0))
+                    }
+            platforms_by_date[platform] = sorted(unique.values(), key=lambda x: x["t"])
 
     low_prices = [s["min_price"] for s in summary if s["min_price"] <= threshold] if threshold > 0 else []
     status = "low_price" if low_prices else "not_low"
