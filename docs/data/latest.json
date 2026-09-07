@@ -11,19 +11,19 @@
         "name": "TSN"
       },
       "depart_dates": [
+        "2026-10-04",
         "2026-10-05",
         "2026-10-06",
         "2026-10-07"
       ],
       "return_dates": [],
       "platforms": [
-        "fliggy",
-        "tuniu",
         "qunar",
-        "tongcheng"
+        "tongcheng",
+        "ctrip"
       ],
-      "threshold": 0.0,
-      "query_time": "2026-09-07 08:34:41",
+      "threshold": 850.0,
+      "query_time": "2026-09-07 13:23:07",
       "nearby_airports": {
         "from": [
           "CTU",
@@ -34,400 +34,8 @@
         ]
       }
     },
-    "results": [
-      {
-        "platform": "fliggy",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "price": 869.0,
-        "airline": "川航",
-        "flight_no": "3U6859",
-        "depart_time": "2026-10-05 07:55",
-        "arrive_time": "2026-10-05 22:35",
-        "fetched_at": "2026-09-07 08:27:41",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "fliggy",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "price": 990.0,
-        "airline": "西藏航",
-        "flight_no": "TV9703",
-        "depart_time": "2026-10-06 10:00",
-        "arrive_time": "2026-10-06 18:05",
-        "fetched_at": "2026-09-07 08:27:54",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "fliggy",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "price": 1150.0,
-        "airline": "华夏",
-        "flight_no": "G51145E",
-        "depart_time": "2026-10-07 08:20",
-        "arrive_time": "2026-10-07 20:00",
-        "fetched_at": "2026-09-07 08:28:07",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tuniu",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "price": 1000.0,
-        "airline": "龙江航空",
-        "flight_no": "LT1325",
-        "depart_time": "09:45",
-        "arrive_time": "12:30",
-        "fetched_at": "2026-09-07 08:28:29",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tuniu",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "price": 1376.0,
-        "airline": "奥凯航空",
-        "flight_no": "BK2755",
-        "depart_time": "12:35",
-        "arrive_time": "15:10",
-        "fetched_at": "2026-09-07 08:28:47",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "qunar",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "price": 989.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:29:57",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "qunar",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "price": 161.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:30:17",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "price": 880.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:30:37",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "price": 1380.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:31:04",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "price": 1150.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:31:31",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "qunar",
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "price": 867.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:33:07",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "qunar",
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "price": 989.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:33:27",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "qunar",
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "price": 1150.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:33:37",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "price": 880.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:33:57",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "price": 1380.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:34:21",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "platform": "tongcheng",
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "price": 1150.0,
-        "airline": "",
-        "flight_no": "",
-        "depart_time": "",
-        "arrive_time": "",
-        "fetched_at": "2026-09-07 08:34:41",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      }
-    ],
-    "summary": [
-      {
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "per_platform": {
-          "fliggy": 869.0,
-          "tuniu": 1000.0,
-          "tongcheng": 880.0
-        },
-        "min_price": 869.0,
-        "best_platform": "fliggy",
-        "best_flight": "川航3U6859",
-        "best_depart_time": "2026-10-05 07:55",
-        "best_arrive_time": "2026-10-05 22:35",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "per_platform": {
-          "fliggy": 990.0,
-          "tuniu": 1376.0,
-          "qunar": 989.0,
-          "tongcheng": 1380.0
-        },
-        "min_price": 989.0,
-        "best_platform": "qunar",
-        "best_flight": "",
-        "best_depart_time": "",
-        "best_arrive_time": "",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "from": "CTU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "per_platform": {
-          "fliggy": 1150.0,
-          "qunar": 161.0,
-          "tongcheng": 1150.0
-        },
-        "min_price": 161.0,
-        "best_platform": "qunar",
-        "best_flight": "",
-        "best_depart_time": "",
-        "best_arrive_time": "",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-05",
-        "per_platform": {
-          "qunar": 867.0,
-          "tongcheng": 880.0
-        },
-        "min_price": 867.0,
-        "best_platform": "qunar",
-        "best_flight": "",
-        "best_depart_time": "",
-        "best_arrive_time": "",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-06",
-        "per_platform": {
-          "qunar": 989.0,
-          "tongcheng": 1380.0
-        },
-        "min_price": 989.0,
-        "best_platform": "qunar",
-        "best_flight": "",
-        "best_depart_time": "",
-        "best_arrive_time": "",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      },
-      {
-        "from": "TFU",
-        "to": "TSN",
-        "date": "2026-10-07",
-        "per_platform": {
-          "qunar": 1150.0,
-          "tongcheng": 1150.0
-        },
-        "min_price": 1150.0,
-        "best_platform": "qunar",
-        "best_flight": "",
-        "best_depart_time": "",
-        "best_arrive_time": "",
-        "tax": null,
-        "baggage": "未知",
-        "seats": null,
-        "cabin": "未知",
-        "fare_type": "未知"
-      }
-    ],
+    "results": [],
+    "summary": [],
     "trend": {
       "2026-10-05": {
         "fliggy": [
@@ -524,139 +132,69 @@
     },
     "health": [
       {
-        "platform": "fliggy",
-        "records": 3,
-        "dates_ok": 3,
-        "dates_expected": 3,
-        "success_rate": 100.0,
-        "status": "正常"
-      },
-      {
-        "platform": "tuniu",
-        "records": 2,
-        "dates_ok": 2,
-        "dates_expected": 3,
-        "success_rate": 66.7,
-        "status": "降级"
-      },
-      {
         "platform": "qunar",
-        "records": 5,
-        "dates_ok": 3,
+        "records": 0,
+        "dates_ok": 0,
         "dates_expected": 3,
-        "success_rate": 100.0,
-        "status": "正常"
+        "success_rate": 0.0,
+        "status": "no_results",
+        "last_checked": "2026-09-07 13:23:05"
       },
       {
         "platform": "tongcheng",
-        "records": 6,
-        "dates_ok": 3,
+        "records": 0,
+        "dates_ok": 0,
         "dates_expected": 3,
-        "success_rate": 100.0,
-        "status": "正常"
+        "success_rate": 0.0,
+        "status": "no_results",
+        "last_checked": "2026-09-07 13:23:06"
+      },
+      {
+        "platform": "ctrip",
+        "records": 0,
+        "dates_ok": 0,
+        "dates_expected": 3,
+        "success_rate": 0.0,
+        "status": "no_results",
+        "last_checked": "2026-09-07 13:23:06"
       }
     ],
     "calendar": [
       {
+        "date": "2026-10-04",
+        "min_price": null,
+        "best_platform": null,
+        "signal": "暂无价格",
+        "baseline": null,
+        "forecast": "暂无预测"
+      },
+      {
         "date": "2026-10-05",
-        "min_price": 867.0,
-        "best_platform": "qunar",
-        "signal": "正常",
-        "baseline": 874.5,
-        "forecast": "预计震荡"
+        "min_price": null,
+        "best_platform": null,
+        "signal": "暂无价格",
+        "baseline": null,
+        "forecast": "暂无预测"
       },
       {
         "date": "2026-10-06",
-        "min_price": 989.0,
-        "best_platform": "qunar",
-        "signal": "偏低",
-        "baseline": 1183.0,
-        "forecast": "短期可能维持低位"
+        "min_price": null,
+        "best_platform": null,
+        "signal": "暂无价格",
+        "baseline": null,
+        "forecast": "暂无预测"
       },
       {
         "date": "2026-10-07",
-        "min_price": 161.0,
-        "best_platform": "qunar",
-        "signal": "偏低",
-        "baseline": 1150.0,
-        "forecast": "短期可能维持低位"
+        "min_price": null,
+        "best_platform": null,
+        "signal": "暂无价格",
+        "baseline": null,
+        "forecast": "暂无预测"
       }
     ],
-    "baseline": {
-      "2026-10-05": {
-        "fliggy": {
-          "avg": 869.0,
-          "median": 869.0,
-          "min": 869.0,
-          "samples": 1
-        },
-        "tuniu": {
-          "avg": 1000.0,
-          "median": 1000.0,
-          "min": 1000.0,
-          "samples": 1
-        },
-        "tongcheng": {
-          "avg": 880.0,
-          "median": 880.0,
-          "min": 880.0,
-          "samples": 1
-        },
-        "qunar": {
-          "avg": 867.0,
-          "median": 867.0,
-          "min": 867.0,
-          "samples": 1
-        }
-      },
-      "2026-10-06": {
-        "fliggy": {
-          "avg": 990.0,
-          "median": 990.0,
-          "min": 990.0,
-          "samples": 1
-        },
-        "tuniu": {
-          "avg": 1376.0,
-          "median": 1376.0,
-          "min": 1376.0,
-          "samples": 1
-        },
-        "qunar": {
-          "avg": 989.0,
-          "median": 989.0,
-          "min": 989.0,
-          "samples": 1
-        },
-        "tongcheng": {
-          "avg": 1380.0,
-          "median": 1380.0,
-          "min": 1380.0,
-          "samples": 1
-        }
-      },
-      "2026-10-07": {
-        "fliggy": {
-          "avg": 1150.0,
-          "median": 1150.0,
-          "min": 1150.0,
-          "samples": 1
-        },
-        "qunar": {
-          "avg": 1150.0,
-          "median": 1150.0,
-          "min": 1150.0,
-          "samples": 1
-        },
-        "tongcheng": {
-          "avg": 1150.0,
-          "median": 1150.0,
-          "min": 1150.0,
-          "samples": 1
-        }
-      }
-    },
+    "baseline": {},
     "status": "not_low",
-    "generated_at": "2026-09-07T08:34:54.400950Z"
+    "generated_at": "2026-09-07T13:23:07.874317Z"
   }
 }
