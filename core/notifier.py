@@ -3,6 +3,9 @@ import json
 import logging
 import urllib.parse
 import urllib.request
+import smtplib
+import ssl
+from email.message import EmailMessage
 from typing import Optional
 
 
@@ -92,6 +95,39 @@ class TelegramNotifier:
             return False
 
 
+class EmailNotifier:
+    """SMTP 邮件通知。密码应通过环境变量/GitHub Secret 注入。"""
+    def __init__(self, host: str, port: int, user: str, password: str,
+                 recipient: str, logger: logging.Logger, use_ssl: bool = True):
+        self.host, self.port = host.strip(), int(port)
+        self.user, self.password = user.strip(), password
+        self.recipient, self.logger = recipient.strip(), logger
+        self.use_ssl = use_ssl
+
+    def send(self, title: str, desp: str = "") -> bool:
+        if not self.host or not self.user or not self.password or not self.recipient:
+            self.logger.debug("SMTP 配置不完整，跳过邮件推送")
+            return False
+        msg = EmailMessage()
+        msg["Subject"] = title[:120]
+        msg["From"] = self.user
+        msg["To"] = self.recipient
+        msg.set_content(desp)
+        try:
+            if self.use_ssl:
+                with smtplib.SMTP_SSL(self.host, self.port, context=ssl.create_default_context(), timeout=15) as server:
+                    server.login(self.user, self.password)
+                    server.send_message(msg)
+            else:
+                with smtplib.SMTP(self.host, self.port, timeout=15) as server:
+                    server.starttls(context=ssl.create_default_context())
+                    server.login(self.user, self.password)
+                    server.send_message(msg)
+            self.logger.info("SMTP 邮件推送成功: %s", title)
+            return True
+        except Exception as e:
+            self.logger.warning("SMTP 邮件推送异常: %s", e)
+            return False
 class MultiNotifier:
     def __init__(self, notifiers, logger: logging.Logger):
         self.notifiers, self.logger = notifiers, logger
@@ -119,4 +155,10 @@ def build_notifier(cfg: dict, logger: logging.Logger):
     tg = (cfg.get("telegram") or {})
     if tg.get("enabled") and tg.get("bot_token") and tg.get("chat_id"):
         notifiers.append(TelegramNotifier(tg["bot_token"], tg["chat_id"], logger))
+    em = (cfg.get("email") or {})
+    if em.get("enabled") and em.get("host") and em.get("user") and em.get("password") and em.get("to"):
+        notifiers.append(EmailNotifier(
+            em["host"], em.get("port", 465), em["user"], em["password"],
+            em["to"], logger, bool(em.get("ssl", True)),
+        ))
     return MultiNotifier(notifiers, logger) if notifiers else None
