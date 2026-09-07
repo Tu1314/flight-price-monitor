@@ -117,6 +117,14 @@ def main():
         "    enabled: false",
         '    bot_token: ""',
         '    chat_id: ""',
+        "  email:",
+        "    enabled: false",
+        '    host: "smtp.163.com"',
+        "    port: 465",
+        "    ssl: true",
+        '    user: ""',
+        '    password: ""',
+        '    to: ""',
         "",
     ]
 
