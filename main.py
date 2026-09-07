@@ -139,6 +139,20 @@ def main():
     if serverchan_key:
         cfg.setdefault("notifier", {}).setdefault("serverchan", {})
         cfg["notifier"]["serverchan"].update(enabled=True, send_key=serverchan_key)
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_to = os.environ.get("SMTP_TO") or smtp_user
+    if smtp_password and smtp_user and smtp_to:
+        cfg.setdefault("notifier", {}).setdefault("email", {})
+        cfg["notifier"]["email"].update(
+            enabled=True,
+            host=os.environ.get("SMTP_HOST") or "smtp.163.com",
+            port=int(os.environ.get("SMTP_PORT") or 465),
+            user=smtp_user,
+            password=smtp_password,
+            to=smtp_to,
+            ssl=(os.environ.get("SMTP_SSL", "true").lower() != "false"),
+        )
 
     out = cfg.get("output", {})
     logger = setup_logger(out.get("log_path", "logs/monitor.log"))
