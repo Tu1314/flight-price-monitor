@@ -3,8 +3,8 @@
   "data": {
     "query": {
       "from": {
-        "code": "TFU",
-        "name": "TFU"
+        "code": "CTU",
+        "name": "CTU"
       },
       "to": {
         "code": "TSN",
@@ -24,9 +24,10 @@
         "tongcheng"
       ],
       "threshold": 850.0,
-      "query_time": "2026-09-10 21:39:50",
+      "query_time": "2026-09-11 03:52:26",
       "nearby_airports": {
         "from": [
+          "CTU",
           "TFU"
         ],
         "to": [
@@ -45,7 +46,7 @@
         "flight_no": "G52563P",
         "depart_time": "07:55",
         "arrive_time": "22:35",
-        "fetched_at": "2026-09-10 21:29:26",
+        "fetched_at": "2026-09-11 03:41:59",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -62,7 +63,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:30:33",
+        "fetched_at": "2026-09-11 03:43:06",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -79,7 +80,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:32:04",
+        "fetched_at": "2026-09-11 03:44:42",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -96,7 +97,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:32:31",
+        "fetched_at": "2026-09-11 03:45:11",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -108,12 +109,12 @@
         "from": "CTU",
         "to": "TSN",
         "date": "2026-10-05",
-        "price": 650.0,
-        "airline": "华夏",
-        "flight_no": "G52563P",
-        "depart_time": "07:55",
-        "arrive_time": "22:35",
-        "fetched_at": "2026-09-10 21:34:14",
+        "price": 880.0,
+        "airline": "国航",
+        "flight_no": "CA9563",
+        "depart_time": "08:10",
+        "arrive_time": "10:40",
+        "fetched_at": "2026-09-11 03:46:59",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -125,12 +126,12 @@
         "from": "CTU",
         "to": "TSN",
         "date": "2026-10-05",
-        "price": 620.0,
+        "price": 650.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:34:52",
+        "fetched_at": "2026-09-11 03:47:41",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -142,12 +143,12 @@
         "from": "CTU",
         "to": "TSN",
         "date": "2026-10-06",
-        "price": 1041.0,
+        "price": 1017.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:35:09",
+        "fetched_at": "2026-09-11 03:47:48",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -164,7 +165,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:35:27",
+        "fetched_at": "2026-09-11 03:48:07",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -181,7 +182,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:35:50",
+        "fetched_at": "2026-09-11 03:48:30",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -198,7 +199,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:36:16",
+        "fetched_at": "2026-09-11 03:48:51",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -215,7 +216,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:36:45",
+        "fetched_at": "2026-09-11 03:49:16",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -227,12 +228,12 @@
         "from": "TFU",
         "to": "TSN",
         "date": "2026-10-05",
-        "price": 620.0,
+        "price": 650.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:38:08",
+        "fetched_at": "2026-09-11 03:50:45",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -244,12 +245,12 @@
         "from": "TFU",
         "to": "TSN",
         "date": "2026-10-06",
-        "price": 1041.0,
+        "price": 1017.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:38:31",
+        "fetched_at": "2026-09-11 03:51:03",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -266,7 +267,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:38:39",
+        "fetched_at": "2026-09-11 03:51:17",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -283,7 +284,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:39:03",
+        "fetched_at": "2026-09-11 03:51:45",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -300,7 +301,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:39:26",
+        "fetched_at": "2026-09-11 03:52:05",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -317,7 +318,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-10 21:39:50",
+        "fetched_at": "2026-09-11 03:52:26",
         "tax": null,
         "baggage": "未知",
         "seats": null,
@@ -350,11 +351,11 @@
         "to": "TSN",
         "date": "2026-10-05",
         "per_platform": {
-          "tuniu": 650.0,
-          "qunar": 620.0,
+          "tuniu": 880.0,
+          "qunar": 650.0,
           "tongcheng": 650.0
         },
-        "min_price": 620.0,
+        "min_price": 650.0,
         "best_platform": "qunar",
         "best_flight": "",
         "best_depart_time": "",
@@ -370,10 +371,10 @@
         "to": "TSN",
         "date": "2026-10-06",
         "per_platform": {
-          "qunar": 1041.0,
+          "qunar": 1017.0,
           "tongcheng": 1290.0
         },
-        "min_price": 1041.0,
+        "min_price": 1017.0,
         "best_platform": "qunar",
         "best_flight": "",
         "best_depart_time": "",
@@ -427,10 +428,10 @@
         "to": "TSN",
         "date": "2026-10-05",
         "per_platform": {
-          "qunar": 620.0,
+          "qunar": 650.0,
           "tongcheng": 650.0
         },
-        "min_price": 620.0,
+        "min_price": 650.0,
         "best_platform": "qunar",
         "best_flight": "",
         "best_depart_time": "",
@@ -446,10 +447,10 @@
         "to": "TSN",
         "date": "2026-10-06",
         "per_platform": {
-          "qunar": 1041.0,
+          "qunar": 1017.0,
           "tongcheng": 1290.0
         },
-        "min_price": 1041.0,
+        "min_price": 1017.0,
         "best_platform": "qunar",
         "best_flight": "",
         "best_depart_time": "",
@@ -510,6 +511,10 @@
           {
             "t": "2026-09-10 21:29:26",
             "v": 490.0
+          },
+          {
+            "t": "2026-09-11 03:41:59",
+            "v": 490.0
           }
         ],
         "tongcheng": [
@@ -568,6 +573,14 @@
           {
             "t": "2026-09-10 21:32:31",
             "v": 490.0
+          },
+          {
+            "t": "2026-09-11 03:43:06",
+            "v": 490.0
+          },
+          {
+            "t": "2026-09-11 03:45:11",
+            "v": 490.0
           }
         ],
         "qunar": [
@@ -597,6 +610,10 @@
           },
           {
             "t": "2026-09-10 21:32:04",
+            "v": 490.0
+          },
+          {
+            "t": "2026-09-11 03:44:42",
             "v": 490.0
           }
         ]
@@ -638,6 +655,10 @@
           {
             "t": "2026-09-10 21:34:14",
             "v": 650.0
+          },
+          {
+            "t": "2026-09-11 03:46:59",
+            "v": 880.0
           }
         ],
         "qunar": [
@@ -704,6 +725,14 @@
           {
             "t": "2026-09-10 21:38:08",
             "v": 620.0
+          },
+          {
+            "t": "2026-09-11 03:47:41",
+            "v": 650.0
+          },
+          {
+            "t": "2026-09-11 03:50:45",
+            "v": 650.0
           }
         ],
         "tongcheng": [
@@ -777,6 +806,14 @@
           },
           {
             "t": "2026-09-10 21:39:03",
+            "v": 650.0
+          },
+          {
+            "t": "2026-09-11 03:48:30",
+            "v": 650.0
+          },
+          {
+            "t": "2026-09-11 03:51:45",
             "v": 650.0
           }
         ],
@@ -860,6 +897,14 @@
           {
             "t": "2026-09-10 21:38:31",
             "v": 1041.0
+          },
+          {
+            "t": "2026-09-11 03:47:48",
+            "v": 1017.0
+          },
+          {
+            "t": "2026-09-11 03:51:03",
+            "v": 1017.0
           }
         ],
         "tongcheng": [
@@ -933,6 +978,14 @@
           },
           {
             "t": "2026-09-10 21:39:26",
+            "v": 1290.0
+          },
+          {
+            "t": "2026-09-11 03:48:51",
+            "v": 1290.0
+          },
+          {
+            "t": "2026-09-11 03:52:05",
             "v": 1290.0
           }
         ],
@@ -1026,6 +1079,14 @@
           {
             "t": "2026-09-10 21:38:39",
             "v": 1190.0
+          },
+          {
+            "t": "2026-09-11 03:48:07",
+            "v": 1190.0
+          },
+          {
+            "t": "2026-09-11 03:51:17",
+            "v": 1190.0
           }
         ],
         "tongcheng": [
@@ -1100,6 +1161,14 @@
           {
             "t": "2026-09-10 21:39:50",
             "v": 1190.0
+          },
+          {
+            "t": "2026-09-11 03:49:16",
+            "v": 1190.0
+          },
+          {
+            "t": "2026-09-11 03:52:26",
+            "v": 1190.0
           }
         ],
         "fliggy": [
@@ -1118,7 +1187,7 @@
         "dates_expected": 3,
         "success_rate": 0.0,
         "status": "no_results",
-        "last_checked": "2026-09-10 21:38:05"
+        "last_checked": "2026-09-11 03:50:42"
       },
       {
         "platform": "tuniu",
@@ -1156,7 +1225,7 @@
       },
       {
         "date": "2026-10-05",
-        "min_price": 620.0,
+        "min_price": 650.0,
         "best_platform": "qunar",
         "signal": "正常",
         "baseline": 650.0,
@@ -1164,10 +1233,10 @@
       },
       {
         "date": "2026-10-06",
-        "min_price": 1041.0,
+        "min_price": 1017.0,
         "best_platform": "qunar",
         "signal": "偏低",
-        "baseline": 1165.5,
+        "baseline": 1153.5,
         "forecast": "短期可能维持低位"
       },
       {
@@ -1202,15 +1271,15 @@
       },
       "2026-10-05": {
         "tuniu": {
-          "avg": 650.0,
-          "median": 650.0,
-          "min": 650.0,
+          "avg": 880.0,
+          "median": 880.0,
+          "min": 880.0,
           "samples": 1
         },
         "qunar": {
-          "avg": 620.0,
-          "median": 620.0,
-          "min": 620.0,
+          "avg": 650.0,
+          "median": 650.0,
+          "min": 650.0,
           "samples": 1
         },
         "tongcheng": {
@@ -1222,9 +1291,9 @@
       },
       "2026-10-06": {
         "qunar": {
-          "avg": 1041.0,
-          "median": 1041.0,
-          "min": 1041.0,
+          "avg": 1017.0,
+          "median": 1017.0,
+          "min": 1017.0,
           "samples": 1
         },
         "tongcheng": {
@@ -1250,6 +1319,6 @@
       }
     },
     "status": "low_price",
-    "generated_at": "2026-09-10T21:40:09.037423Z"
+    "generated_at": "2026-09-11T03:52:41.759486Z"
   }
 }
