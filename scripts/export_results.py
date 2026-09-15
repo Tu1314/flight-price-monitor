@@ -36,6 +36,11 @@ def parse_extra(value: str) -> dict:
 
 def normalize_result(row) -> dict:
     extra = parse_extra(row[10] if len(row) > 10 else "")
+    fare_type = extra.get("fare_type", "未知")
+    route_type = extra.get("route_type")
+    if not route_type:
+        marker = f"{fare_type} {extra.get('stops', '')} {extra.get('segments', '')}".lower()
+        route_type = "中转" if any(x in marker for x in ("transfer", "中转", "stop", "经停")) else "直达"
     return {
         "platform": row[0], "from": row[1], "to": row[2], "date": row[3],
         "price": row[4], "airline": row[5], "flight_no": row[6],
@@ -44,8 +49,77 @@ def normalize_result(row) -> dict:
         "baggage": extra.get("baggage", "未知"),
         "seats": extra.get("seats", extra.get("quantity")),
         "cabin": extra.get("cabin", "未知"),
-        "fare_type": extra.get("fare_type", "未知"),
+        "fare_type": fare_type,
+        "route_type": route_type,
     }
+
+
+def build_analysis(results: list, trend: dict) -> dict:
+    """Generate report-ready analytics from timestamped snapshots.
+
+    Flight rows are currently lowest-offer samples, so inventory metrics are
+    labelled as sampled counts rather than claiming full marketplace coverage.
+    """
+    points = []
+    for depart_date, date_platforms in (trend or {}).items():
+        for platform, values in (date_platforms or {}).items():
+            for point in values or []:
+                try:
+                    ts = datetime.fromisoformat(str(point.get("t")))
+                    points.append({"t": ts, "v": float(point.get("v")), "platform": platform,
+                                   "date": str(depart_date)})
+                except (TypeError, ValueError):
+                    continue
+    points.sort(key=lambda x: x["t"])
+    drops_by_hour = {str(h).zfill(2): {"drops": 0, "amount": 0.0} for h in range(24)}
+    previous = {}
+    for point in points:
+        key = point["platform"]
+        old = previous.get(key)
+        if old is not None and point["v"] < old["v"]:
+            hour = str(point["t"].hour).zfill(2)
+            drops_by_hour[hour]["drops"] += 1
+            drops_by_hour[hour]["amount"] += round(old["v"] - point["v"], 1)
+        previous[key] = point
+    drop_hours = [
+        {"hour": h, "drops": v["drops"], "amount": round(v["amount"], 1)}
+        for h, v in drops_by_hour.items() if v["drops"]
+    ]
+    trend_summary = []
+    for date in sorted({r["date"] for r in results}):
+        vals = [r["price"] for r in results if r["date"] == date]
+        if not vals:
+            continue
+        date_points = [p for p in points if p.get("date") == date]
+        first = date_points[0]["v"] if date_points else min(vals)
+        last = date_points[-1]["v"] if date_points else min(vals)
+        delta = round(last - first, 1)
+        direction = "下降" if delta < -1 else ("上升" if delta > 1 else "横盘")
+        forecast = "可能继续下降" if delta < -20 else ("可能反弹" if delta > 20 else "预计震荡")
+        trend_summary.append({"date": date, "first": first, "last": last,
+                              "min": min(vals), "max": max(vals), "delta": delta,
+                              "direction": direction, "forecast": forecast})
+    route_groups = {}
+    for r in results:
+        route_groups.setdefault(r["date"], {}).setdefault(r.get("route_type", "直达"), []).append(r["price"])
+    low_split = []
+    for date, types in sorted(route_groups.items()):
+        low_split.append({"date": date, "direct": min(types.get("直达", [None])),
+                          "transfer": min(types.get("中转", [None]))})
+    inventory = []
+    seen = set()
+    for r in sorted(results, key=lambda x: x.get("fetched_at", "")):
+        flight = (r.get("platform"), r.get("date"), r.get("flight_no") or "")
+        if not flight[2]:
+            continue
+        is_new = flight not in seen
+        seen.add(flight)
+        inventory.append({"t": r.get("fetched_at"), "date": r.get("date"),
+                          "platform": r.get("platform"), "flight_no": flight[2],
+                          "new": is_new})
+    return {"drop_hours": drop_hours, "trend_summary": trend_summary,
+            "low_split": low_split, "inventory": inventory,
+            "inventory_note": "航班数量基于已采集的最低价航班号；平台未返回航班号时不计入"}
 
 
 def build_health(results: list, platforms: list, expected_dates: list, persisted=None) -> list:
@@ -138,7 +212,8 @@ def main():
         best = min(items, key=lambda x: x["price"])
         summary.append({
             "from": fc, "to": tc, "date": d,
-            "per_platform": {i["platform"]: i["price"] for i in items},
+            "per_platform": {p: min(i["price"] for i in items if i["platform"] == p)
+                              for p in {i["platform"] for i in items}},
             "min_price": best["price"],
             "best_platform": best["platform"],
             "best_flight": f"{best['airline']}{best['flight_no']}",
@@ -241,6 +316,7 @@ def main():
                     }
             platforms_by_date[platform] = sorted(unique.values(), key=lambda x: x["t"])
 
+    analysis = build_analysis(results, trend)
     low_prices = [s["min_price"] for s in summary if s["min_price"] <= threshold] if threshold > 0 else []
     status = "low_price" if low_prices else "not_low"
 
@@ -266,6 +342,7 @@ def main():
             "health": health,
             "calendar": calendar,
             "baseline": baseline,
+            "analysis": analysis,
             "status": status,
             "generated_at": datetime.utcnow().isoformat() + "Z",
         },
@@ -279,3 +356,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
