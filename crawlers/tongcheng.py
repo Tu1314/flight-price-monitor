@@ -80,6 +80,7 @@ class TongchengCrawler(BaseCrawler):
                             platform=self.name,
                             from_city=from_city, to_city=to_city,
                             depart_date=date, price=price,
+                            extra=json.dumps({"route_type": "直达"}, ensure_ascii=False),
                         ))
                         self.logger.info("[tongcheng] %s 最低价 ¥%.0f", date, price)
                     else:
@@ -178,9 +179,13 @@ class TongchengCrawler(BaseCrawler):
         try:
             with open(path, "w", encoding="utf-8") as f:
                 for i, item in enumerate(captured):
-                    f.write(f"\n----- [{i}] {item['url']} -----\n")
+                    f.write(f"
+----- [{i}] {item['url']} -----
+")
                     f.write((item.get("text") or "")[:200000])
-                    f.write("\n")
+                    f.write("
+")
             self.logger.info("[tongcheng] 已保存 XHR: %s", path)
         except Exception:
             pass
+
