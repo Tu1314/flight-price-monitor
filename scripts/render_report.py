@@ -9,6 +9,11 @@ from pathlib import Path
 from string import Template
 from urllib.parse import quote
 
+try:
+    from scripts.export_results import build_analysis
+except ImportError:
+    build_analysis = None
+
 PLATFORM_NAMES  = {"fliggy":"飞猪","tuniu":"途牛","ctrip":"携程","qunar":"去哪儿","tongcheng":"同程"}
 PLATFORM_COLORS = {"fliggy":"#FF6B00","tuniu":"#00A651","ctrip":"#0086F6","qunar":"#FF4500","tongcheng":"#7C3AED"}
 
@@ -59,6 +64,13 @@ tr:last-child td{border-bottom:none}
 .legend-item{display:flex;align-items:center;gap:5px}
 .lline{width:20px;height:3px;border-radius:2px;display:inline-block}
 canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
+.chart-scroll{overflow-x:auto;border-radius:8px;background:#fafbff}
+.chart-scroll canvas{min-width:760px;width:100%;height:270px}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.analysis-panel{border:1px solid var(--border);border-radius:10px;padding:14px;background:#fcfdff}
+.analysis-panel h3{font-size:13px;color:var(--text);margin-bottom:8px}
+.analysis-panel p{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}
+@media(max-width:680px){.analysis-grid{grid-template-columns:1fr}.card{padding:18px 14px}}
 .nodata{text-align:center;padding:40px;color:var(--sub);font-size:13px}
 .status{padding:12px 16px;border-radius:10px;margin-bottom:18px;font-weight:700}
 .status.low{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
@@ -70,7 +82,7 @@ canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
 """
 
 JS_TPL = r"""
-const TD=$TREND_DATA;const CM=$COLOR_MAP;const NM=$NAME_MAP;
+const TD=$TREND_DATA;const CM=$COLOR_MAP;const NM=$NAME_MAP;const AN=$ANALYSIS_DATA;
 var allDates=Object.keys(TD).sort(),idx=0;
 var cv=document.getElementById('cv'),nd=document.getElementById('nd'),ctx=cv?cv.getContext('2d'):null;
 function tabs(){var el=document.getElementById('tabs');if(!el)return;el.innerHTML='';
@@ -111,6 +123,15 @@ function legend(ps){var el=document.getElementById('lg');if(!el)return;
   el.innerHTML=ps.map(function(p){return'<div class="legend-item"><span class="lline" style="background:'+(CM[p]||'#888')+'"></span><span>'+(NM[p]||p)+'</span></div>'}).join('')}
 if(allDates.length){tabs();draw(allDates[0])}else{if(nd)nd.style.display='block';if(cv)cv.style.display='none'}
 window.addEventListener('resize',function(){if(allDates.length)draw(allDates[idx])});
+
+function barChart(id, labels, values, color, suffix){var el=document.getElementById(id);if(!el||!labels.length)return;var dpr=devicePixelRatio||1,W=Math.max(760,el.parentElement.clientWidth||760),H=270;el.width=W*dpr;el.height=H*dpr;el.style.width=W+'px';el.style.height=H+'px';var c=el.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);var max=Math.max.apply(null,values.concat([1])),left=48,bottom=42,top=18,pw=W-left-18,ph=H-top-bottom,bw=Math.max(10,pw/labels.length*.62);c.font='11px system-ui';c.textAlign='center';labels.forEach(function(label,i){var x=left+pw*(i+.5)/labels.length,y=top+ph*(1-values[i]/max);c.fillStyle=color;c.fillRect(x-bw/2,y,bw,top+ph-y);c.fillStyle='#6b7280';c.save();c.translate(x,H-8);c.rotate(labels.length>10?-Math.PI/4:0);c.fillText(label,0,0);c.restore();c.fillStyle='#374151';c.fillText(String(values[i])+suffix,x,y-5)});c.strokeStyle='#e5e7eb';c.beginPath();c.moveTo(left,top+ph);c.lineTo(W-18,top+ph);c.stroke()}
+function lineChart(id, rows){var el=document.getElementById(id);if(!el||!rows.length)return;var dpr=devicePixelRatio||1,W=Math.max(760,el.parentElement.clientWidth||760),H=270;el.width=W*dpr;el.height=H*dpr;el.style.width=W+'px';el.style.height=H+'px';var c=el.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);var vals=[];rows.forEach(function(r){vals.push(r.first,r.last,r.min,r.max)});var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),sp=mx-mn||1,left=50,right=22,top=20,bottom=42,pw=W-left-right,ph=H-top-bottom;function x(i){return left+pw*(i/Math.max(1,rows.length-1))}function y(v){return top+ph*(1-(v-mn)/sp)};c.strokeStyle='#eef0f5';for(var g=0;g<4;g++){var gy=top+ph*g/3;c.beginPath();c.moveTo(left,gy);c.lineTo(W-right,gy);c.stroke();c.fillStyle='#9ca3af';c.font='11px system-ui';c.textAlign='right';c.fillText('¥'+(mx-sp*g/3).toFixed(0),left-7,gy+4)};function series(key,color){c.strokeStyle=color;c.lineWidth=2.5;c.beginPath();rows.forEach(function(r,i){i?c.lineTo(x(i),y(r[key])):c.moveTo(x(i),y(r[key]))});c.stroke();rows.forEach(function(r,i){c.fillStyle=color;c.beginPath();c.arc(x(i),y(r[key]),3.5,0,Math.PI*2);c.fill()})};series('min','#dc2626');series('last','#2563eb');c.fillStyle='#6b7280';c.font='10px system-ui';c.textAlign='center';rows.forEach(function(r,i){c.fillText(r.date.slice(5),x(i),H-8)})}
+function splitChart(id, rows){var el=document.getElementById(id);if(!el||!rows.length)return;var labels=rows.map(function(r){return r.date.slice(5)}),direct=rows.map(function(r){return r.direct||0}),transfer=rows.map(function(r){return r.transfer||0}),dpr=devicePixelRatio||1,W=Math.max(760,el.parentElement.clientWidth||760),H=270;el.width=W*dpr;el.height=H*dpr;el.style.width=W+'px';el.style.height=H+'px';var c=el.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);var max=Math.max.apply(null,direct.concat(transfer).concat([1])),left=48,bottom=42,top=18,pw=W-left-18,ph=H-top-bottom,bw=Math.max(10,pw/labels.length*.62);c.font='11px system-ui';c.textAlign='center';labels.forEach(function(label,i){var x=left+pw*(i+.5)/labels.length;[[direct[i],'#2563eb',-.28],[transfer[i],'#f97316',.28]].forEach(function(a){if(!a[0])return;var y=top+ph*(1-a[0]/max),xx=x+bw*a[2];c.fillStyle=a[1];c.fillRect(xx-bw/4,y,bw/2,top+ph-y);c.fillStyle='#374151';c.fillText(String(a[0]),xx,y-5)});c.fillStyle='#6b7280';c.fillText(label,x,H-8)});c.strokeStyle='#e5e7eb';c.beginPath();c.moveTo(left,top+ph);c.lineTo(W-18,top+ph);c.stroke()}
+function inventoryChart(){var rows=AN.inventory||[],el=document.getElementById('inventoryChart');if(!el||!rows.length)return;var grouped={};rows.forEach(function(r){var k=(r.t||'').slice(0,16);grouped[k]=(grouped[k]||0)+(r.new?1:0)});barChart('inventoryChart',Object.keys(grouped).slice(-16).map(function(x){return x.slice(5)}),Object.keys(grouped).slice(-16).map(function(x){return grouped[x]}),'#00a651',' 架新增')}
+if(AN.drop_hours&&AN.drop_hours.length)barChart('dropChart',AN.drop_hours.map(function(x){return x.hour+'时'}),AN.drop_hours.map(function(x){return x.drops}),'#dc2626',' 次');
+if(AN.trend_summary&&AN.trend_summary.length)lineChart('forecastChart',AN.trend_summary);
+if(AN.low_split&&AN.low_split.length)splitChart('splitChart',AN.low_split);
+inventoryChart();
 """
 
 
@@ -140,7 +161,7 @@ def build_view_url(q, date, platform):
             "&adultPassengerNum=1&searchType=1")
 
 
-def render(q, summary, trend, health=None, calendar=None, status="not_low"):
+def render(q, summary, trend, health=None, calendar=None, status="not_low", analysis=None):
     fn, fc = q["from"]["name"], q["from"]["code"]
     tn, tc = q["to"]["name"],   q["to"]["code"]
     platforms = q["platforms"]
@@ -229,10 +250,12 @@ def render(q, summary, trend, health=None, calendar=None, status="not_low"):
     for item in health:
         health_rows.append(f"<tr><td>{e(PLATFORM_NAMES.get(item.get('platform'), item.get('platform')))}</td><td>{e(item.get('dates_ok', 0))}/{e(item.get('dates_expected', 0))}</td><td>{e(item.get('success_rate', 0))}%</td><td>{e(item.get('status', '—'))}</td><td>{e(item.get('last_checked', '—'))}</td></tr>")
 
+    analysis = analysis or {}
     js = Template(JS_TPL).substitute(
         TREND_DATA=json.dumps(trend_filtered, ensure_ascii=False),
         COLOR_MAP=json.dumps(cm, ensure_ascii=False),
         NAME_MAP=json.dumps(nm, ensure_ascii=False),
+        ANALYSIS_DATA=json.dumps(analysis, ensure_ascii=False),
     )
 
     return f"""<!DOCTYPE html>
@@ -275,8 +298,17 @@ def render(q, summary, trend, health=None, calendar=None, status="not_low"):
     <div class="card-title">📈 价格走势（近7天抓取趋势，多平台）</div>
     <div class="trend-tabs" id="tabs"></div>
     <div class="legend" id="lg"></div>
-    <canvas id="cv" height="250"></canvas>
+    <div class="chart-scroll"><canvas id="cv" height="250"></canvas></div>
     <div class="nodata" id="nd" style="display:none">暂无足够历史数据，随监控积累后将显示</div>
+  </div>
+  <div class="card">
+    <div class="card-title">智能分析</div>
+    <div class="analysis-grid">
+      <div class="analysis-panel"><h3>降价时段分布</h3><div class="chart-scroll"><canvas id="dropChart"></canvas></div><p>按抓取时间统计价格下降发生次数，样本越多结论越稳定。</p></div>
+      <div class="analysis-panel"><h3>价格趋势与短期判断</h3><div class="chart-scroll"><canvas id="forecastChart"></canvas></div><p>红线为历史最低、蓝点线为最近价格；预测只依据已有样本，不构成购票保证。</p></div>
+      <div class="analysis-panel"><h3>直达 / 中转最低价</h3><div class="chart-scroll"><canvas id="splitChart"></canvas></div><p>直达与中转分开统计；当前平台未返回航程类型时按直达兼容展示。</p></div>
+      <div class="analysis-panel"><h3>新增航班与补航观察</h3><div class="chart-scroll"><canvas id="inventoryChart"></canvas></div><p>{e((analysis or {}).get('inventory_note', '航班数量基于已采集航班号'))}</p></div>
+    </div>
   </div>
   <div class="footer">由 flight-price-monitor 自动生成 · {e(platform_desc)} · 以实际购票页面为准</div>
 </div>
@@ -304,8 +336,10 @@ def main():
 
     out = Path(args.out_dir) / "report.html"
     out.parent.mkdir(parents=True, exist_ok=True)
+    analysis = data.get("analysis") or (build_analysis(data.get("results", []), trend) if build_analysis else {})
     out.write_text(render(data["query"], data.get("summary", []), trend,
-                          data.get("health"), data.get("calendar"), data.get("status", "not_low")), encoding="utf-8")
+                          data.get("health"), data.get("calendar"), data.get("status", "not_low"),
+                          analysis), encoding="utf-8")
     print(f"Report → {out}")
 
 
@@ -315,3 +349,4 @@ if __name__ == "__main__":
     except Exception:
         print(traceback.format_exc(), file=sys.stderr)
         sys.exit(1)
+
