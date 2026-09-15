@@ -209,18 +209,25 @@ class FliggyCrawler(BaseCrawler):
 
             offers = self._parse_offers(raw)
             best = self._lowest_offer(offers)
-            if best is not None and best.get("price"):
-                results.append(FlightPrice(
-                    platform=self.name,
-                    from_city=from_city, to_city=to_city,
-                    depart_date=date, price=float(best["price"]),
-                    airline=best.get("airline") or "",
-                    flight_no=best.get("flight_no") or "",
-                    depart_time=best.get("depart_time") or "",
-                    arrive_time=best.get("arrive_time") or "",
-                ))
-                self.logger.info("[fliggy] %s 最低价 ¥%.0f (%s %s)",
-                                 date, best["price"], best.get("airline") or "",
+            priced = [o for o in offers if o.get("price")]
+            if priced:
+                # Keep every priced offer so later runs can detect new flights,
+                # while summary/export still reduce these rows to the minimum.
+                for offer in priced:
+                    results.append(FlightPrice(
+                        platform=self.name,
+                        from_city=from_city, to_city=to_city,
+                        depart_date=date, price=float(offer["price"]),
+                        airline=offer.get("airline") or "",
+                        flight_no=offer.get("flight_no") or "",
+                        depart_time=offer.get("depart_time") or "",
+                        arrive_time=offer.get("arrive_time") or "",
+                        extra=json.dumps({"route_type": offer.get("route_type", "直达"),
+                                          "fare_type": offer.get("fare_type", "未知")}, ensure_ascii=False),
+                    ))
+                best = min(priced, key=lambda o: o["price"])
+                self.logger.info("[fliggy] %s %d 个有价航班，最低 ¥%.0f (%s %s)",
+                                 date, len(priced), best["price"], best.get("airline") or "",
                                  best.get("flight_no") or "")
             else:
                 lp = (raw.get("data") or {}).get("lowestPrice")
@@ -268,6 +275,8 @@ class FliggyCrawler(BaseCrawler):
                     "depart_time": ds.get("depTime") or ds.get("depTimeShow"),
                     "arrive_time": ds.get("arrTime") or ds.get("arrTimeShow"),
                     "price": price,
+                    "route_type": "中转" if group.get("itemType") in {"TRANSFER", "TRANSFER_RECOMMEND", "STOP"} else "直达",
+                    "fare_type": group.get("itemType") or "未知",
                 }
                 key = (offer["flight_no"], offer["depart_time"], offer["price"])
                 if key not in seen:
@@ -291,3 +300,4 @@ class FliggyCrawler(BaseCrawler):
             self.logger.info("[fliggy] 已保存原始响应: %s", path)
         except Exception:
             pass
+
