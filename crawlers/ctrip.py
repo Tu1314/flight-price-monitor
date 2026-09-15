@@ -74,6 +74,7 @@ class CtripCrawler(BaseCrawler):
                             platform=self.name,
                             from_city=from_city, to_city=to_city,
                             depart_date=date, price=price,
+                            extra=json.dumps({"route_type": "直达"}, ensure_ascii=False),
                         ))
                         self.logger.info("[ctrip] %s 最低价 ¥%.0f", date, price)
                     else:
@@ -145,7 +146,7 @@ class CtripCrawler(BaseCrawler):
         """JSON 解析失败时的兜底：仅取 tprice 紧跟 quantity 非 null 的。"""
         prices: list = []
         for m in re.finditer(
-            r'"tprice"\s*:\s*(\d+(?:\.\d+)?)\s*,\s*"quantity"\s*:\s*(null|"?\d+"?)',
+            r'"tprice"s*:s*(d+(?:.d+)?)s*,s*"quantity"s*:s*(null|"?d+"?)',
             text,
         ):
             qty = m.group(2)
@@ -167,9 +168,13 @@ class CtripCrawler(BaseCrawler):
         try:
             with open(path, "w", encoding="utf-8") as f:
                 for i, item in enumerate(captured):
-                    f.write(f"\n----- [{i}] {item['url']} -----\n")
+                    f.write(f"
+----- [{i}] {item['url']} -----
+")
                     f.write((item.get("text") or "")[:200000])
-                    f.write("\n")
+                    f.write("
+")
             self.logger.info("[ctrip] 已保存 XHR: %s", path)
         except Exception:
             pass
+
