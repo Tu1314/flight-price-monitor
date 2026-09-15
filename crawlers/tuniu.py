@@ -255,18 +255,22 @@ class TuniuCrawler(BaseCrawler):
 
             offers = self._parse_offers(raw)
             best = self._lowest_offer(offers)
-            if best is not None and best.get("price"):
-                results.append(FlightPrice(
-                    platform=self.name,
-                    from_city=from_city, to_city=to_city,
-                    depart_date=date, price=float(best["price"]),
-                    airline=best.get("airline") or "",
-                    flight_no=best.get("flight_no") or "",
-                    depart_time=best.get("depart_time") or "",
-                    arrive_time=best.get("arrive_time") or "",
-                ))
-                self.logger.info("[tuniu] %s 最低价 ¥%.0f (%s %s)",
-                                 date, best["price"], best.get("airline") or "",
+            priced = [o for o in offers if o.get("price")]
+            if priced:
+                for offer in priced:
+                    results.append(FlightPrice(
+                        platform=self.name,
+                        from_city=from_city, to_city=to_city,
+                        depart_date=date, price=float(offer["price"]),
+                        airline=offer.get("airline") or "",
+                        flight_no=offer.get("flight_no") or "",
+                        depart_time=offer.get("depart_time") or "",
+                        arrive_time=offer.get("arrive_time") or "",
+                        extra=json.dumps({"route_type": offer.get("route_type", "直达")}, ensure_ascii=False),
+                    ))
+                best = min(priced, key=lambda o: o["price"])
+                self.logger.info("[tuniu] %s %d 个有价航班，最低 ¥%.0f (%s %s)",
+                                 date, len(priced), best["price"], best.get("airline") or "",
                                  best.get("flight_no") or "")
             else:
                 self.logger.warning("[tuniu] %s 未解析到价格", date)
@@ -327,6 +331,7 @@ class TuniuCrawler(BaseCrawler):
                 "depart_time": detail.get("departureTime"),
                 "arrive_time": detail.get("arrivalTime"),
                 "price": price,
+                "route_type": "中转" if any(k in str(options[0]).lower() for k in ("transfer", "中转", "stop")) else "直达",
             }
             key = (offer["flight_no"], offer["depart_time"], offer["price"])
             if key not in seen:
@@ -350,3 +355,4 @@ class TuniuCrawler(BaseCrawler):
             self.logger.info("[tuniu] 已保存原始响应: %s", path)
         except Exception:
             pass
+
